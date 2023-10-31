@@ -1,4 +1,3 @@
-;$ACL2s-SMode$;ACL2s
 #|
 
  CS 2800 Homework 7 - Fall 2023
@@ -188,27 +187,28 @@ measure failed, which should help you fix your errors.
   (declare (xargs :measure (if (intp x) (m0 x) 0)))
   (if (<= x -1000)
       1
-    (1+ (f0 (- x 3)))))#|ACL2s-ToDo-Line|#
-
+    (1+ (f0 (- x 3)))))
 
 (definec m1 (a b :nat) :nat
-  (if (<= b a)
-    (- a b)
-    b))
+  (if (>= a b)
+    (if (= (mod a 2) (mod b 2))
+      (floor (- a b) 2)
+      (+ 2 (ceiling (- a b) 2)))
+    (if (= (mod a 2) (mod b 2))
+      (+ 3 (ceiling (- (1+ b) a) 2))
+      (1+ (floor (- (1+ b) a) 2)))))
 
 "Property 1-1"
 (property (a b :nat)
-  (^
-   (=> (< b a)
-       (< (m1 (1- a) (1+ b))
-          (m1 a b)))
-   (=> (> b a)
-       (< (m1 (1+ b) a)
-          (m1 a b)))))
+  (=> (< b a)
+      (< (m1 (1- a) (1+ b))
+         (m1 a b))))
 
 "Property 1-2"
 (property (a b :nat)
-  XXX)
+  (=> (> b a)
+      (< (m1 (1+ b) a)
+         (m1 a b))))
 
 (definec f1 (a b :nat) :bool
   (declare (xargs :measure (if (and (natp a) (natp b)) (m1 a b) 0)))
