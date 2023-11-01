@@ -268,19 +268,34 @@ measure failed, which should help you fix your errors.
         (t nil)))
 
 (definec m4 (a :nat b :int c :tl) :nat
-  XXX)
+  (cond ((zp a) 0)
+        ((< a b) (+ (- b a) (+ 3 (floor (- b a) 4)) (len c)))
+        ((> (- b) 2) (+ (abs b) (if (< a (len c)) a (len c))))
+        ((endp c) 0)
+        (t (if (< (len c) (- a b)) (len c) (+ (- a b) (len c))))))
 
+       
 "Property 4-1"
-(property 
-  XXX)
+
+(property (a :nat b :int c :tl)
+  :proofs? nil
+  (=> (^ (! (zp a)) (< a b))
+         (< (m4 a (- b 4) c)
+            (m4 a b c))))
 
 "Property 4-2"
-(property 
-  XXX)
+(check= (m4 (1- 3) (1+ -3) (rest '(? nil nil nil (t)))) 8)
+(check= (m4 3 -3 '(? nil nil nil (t))) 6)
+(property (a :nat b :int c :tl)
+  (=> (^ (! (zp a)) (> (- b) 2))
+      (< (m4 (1- a) (1+ b) (rest c))
+            (m4 a b c))))
 
 "Property 4-3"
-(property 
-  XXX)
+(property (a :nat b :int c :tl)
+  (=> (^ (! (zp a)) (! (< a b)) (! (> (- b) 2)) (! (endp c)))
+      (< (m4 a (1+ b) (rest c))
+            (m4 a b c))))
 
 (definec f4 (a :nat b :int c :tl) :int
   (declare (xargs :measure (if (and (natp a) (intp b) (tlp c)) (m4 a b c) 0)))
@@ -291,19 +306,27 @@ measure failed, which should help you fix your errors.
         (t           (f4 a (1+ b) (rest c)))))
 
 (definec m5 (x :nat l :tl a :all) :nat
-  XXX)
+  (cond ((endp l) 0)
+        ((= x 0) 0)
+        ((! (natp (/ x 2))) 
 
 "Property 5-1"
-(property
-  XXX)
+(property (x :nat l :tl a :all)
+  (=> (^ (! (endp l)) (! (= x 0)) (! (natp (/ x 2))))
+      (< (m5 (1- x) l a)
+         (m5 x l a))))
 
 "Property 5-2"
-(property
-  XXX)
+(property (x :nat l :tl a :all)
+  (=> (^ (! (endp l)) (! (= x 0)) (natp (/ x 2)) (> x (len l)))
+      (< (m5 (/ x 2) l x)
+         (m5 x l a))))
 
 "Property 5-3"
-(property
-  XXX)
+(property (x :nat l :tl a :all)
+  (=> (^ (! (endp l)) (! (= x 0)) (natp (/ x 2)) (! (> x (len l))))
+      (< (m5 x (rest l) (first l))
+         (m5 x l a))))
 
 (definec f5 (x :nat l :tl a :all) :all
   (declare (xargs :measure (if (and (natp x) (tlp l)) (m5 x l a) 0)))
@@ -317,16 +340,22 @@ measure failed, which should help you fix your errors.
   XXX)
 
 "Property 6-1"
-(property 
-  XXX)
+(property (x :rational)
+  (=> (>= x 2)
+      (< (f6 (/ x 2))
+         (f6 x))))
 
 "Property 6-2"
-(property 
-  XXX)
+(property (x :rational)
+  (=> (^ (! (>= x 2)) (>= x 1))
+      (< (f6 (/ x 2))
+         (f6 x))))
 
 "Property 6-3"
-(property 
-  XXX)
+(property (x :rational)
+  (=> (^ (! (>= x 2)) (! (>= x 1)) (! (<= x 0)))
+      (< (f6 (- x))
+         (f6 x))))
 
 (definec f6 (x :rational) :rational
   (declare (xargs :measure (if (rationalp x) (m6 x) 0)))
@@ -344,8 +373,10 @@ measure failed, which should help you fix your errors.
   XXX)
 
 "Property 7-1"
-(property
-  XXX)
+(property (n m :nat)
+  (=> (^ (! (zp n)) (zp m))
+      (< (f7 (1- n) 1)
+         (f7 n m))))
 
 "Property 7-2"
 (property
