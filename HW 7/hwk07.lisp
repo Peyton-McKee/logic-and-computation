@@ -241,15 +241,24 @@ measure failed, which should help you fix your errors.
         (t (f2 (cons y x) y))))
 
 (definec m3 (x y :pos) :nat
-  XXX)
+  :ic (< x y)
+  (cond ((= (* 2 x) y) (1+ x))
+        ((> (* 2 x) y) (- y x))
+        (t 0)))
 
 "Property 3-1"
-(property 
-  XXX)
+(property (x y :pos)
+  :hyps (< x y)
+  (=> (= (* 2 x) y)
+      (< (m3 (* 2 x) (+ y 1))
+         (m3 x y))))
 
 "Property 3-2"
-(property 
-  XXX)
+(property (x y :pos)
+  :hyps (< x y)
+  (=> (> (* 2 x) y)
+      (< (m3 (- y x) y)
+         (m3 x y))))
 
 (definec f3 (x y :pos) :all
   :ic (< x y)
