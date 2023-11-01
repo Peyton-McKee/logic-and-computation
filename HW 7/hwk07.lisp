@@ -218,15 +218,21 @@ measure failed, which should help you fix your errors.
        (f1 (1+ b) a))))
 
 (definec m2 (x :tl y :int) :nat
-  XXX)
+  (cond ((= y (len x)) 0)
+  ((< y (len x)) (+ 1 (len x) (- (len x) y)))
+  (t (- y (len x)))))
 
 "Property 2-1"
-(property 
-  XXX)
+(property (x :tl y :int)
+  (=> (< y (len x))
+      (< (m2 x (+ 1 y (len x)))
+         (m2 x y))))
 
 "Property 2-2"
-(property 
-  XXX)
+(property (x :tl y :int)
+  (=> (> y (len x))
+      (< (m2 (cons y x) y)
+         (m2 x y))))
 
 (definec f2 (x :tl y :int) :nat
   (declare (xargs :measure (if (and (tlp x) (intp y)) (m2 x y) 0)))
