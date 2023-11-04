@@ -301,9 +301,9 @@ measure failed, which should help you fix your errors.
         (t           (f4 a (1+ b) (rest c)))))
 
 (definec m5 (x :nat l :tl a :all) :nat
-  (cond ((endp l) 0)
+  (cond ((endp l) (if (natp a) a 0))
         ((= x 0) 0)
-        ((! (natp (/ x 2))) 
+        (t (+ x (len l)))))
 
 "Property 5-1"
 (property (x :nat l :tl a :all)
