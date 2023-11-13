@@ -37,7 +37,197 @@ Lemma in-ap1:
 
 Proof by: Induction on (in a x)
 
-XXX
+Base Case 0:
+(=> (! (tlp x))
+    (=> (^ (tlp x) (tlp y))
+    (== (in a (ap x y))
+        (v (in a x) (in a y)))))
+        
+Exportation:
+(=> (^ (! (tlp x))
+       (tlp x)
+       (tlp y))
+    (== (in a (ap x y))
+        (v (in a x) (in a y))))
+        
+Context:
+C1. (! (tlp x))
+C2. (tlp x)
+C3. (tlp y)
+
+Derived Context:
+D1. nil {C1, C2}
+
+QED
+
+Base Case 1:
+(=> (^ (tlp x) (! (consp x)))
+    (=> (^ (tlp x) (tlp y))
+    (== (in a (ap x y))
+        (v (in a x) (in a y)))))
+
+Exportation:
+(=>
+    (^
+        (tlp x)
+        (! (consp x))
+        (tlp y))
+    (== (in a (ap x y))
+        (v (in a x) (in a y))))
+        
+Context:
+C1. (tlp x)
+C2. (! (consp x))
+C3. (tlp y)
+
+Goal: (== (in a (ap x y))
+        (v (in a x) (in a y)))
+
+Proof:
+(== (in a (ap x y))
+        (v (in a x) (in a y)))
+== {def ap, C2}
+(== (in a y)
+        (v (in a x) (in a y)))
+== {def in, C2}
+(== (in a y)
+        (v nil (in a y)))
+== {pl}
+(== (in a y)
+        (in a y))
+
+QED
+
+Base Case 2:
+(=> (^
+        (tlp x)
+        (consp x)
+        (== a (car x)))
+    (=> (^ (tlp x) (tlp y))
+        (== (in a (ap x y))
+            (v (in a x) (in a y)))))
+            
+Exportation:
+(=>
+    (^
+        (tlp x)
+        (consp x)
+        (==  a (car x))
+        (tlp y))
+   (== (in a (ap x y))
+            (v (in a x) (in a y))))
+            
+Context:
+C1. (tlp x)
+C2. (consp x)
+C3. (== a (car x))
+C4. (tlp y)
+
+Goal:
+(== (in a (ap x y))
+            (v (in a x) (in a y)))
+
+Proof:
+(== (in a (ap x y))
+            (v (in a x) (in a y)))
+== {def ap, C2, cons axioms}
+(== (in a (cons (car x) (ap (cdr x) y)))
+            (v (in a x) (in a y)))
+== {def in, cons axioms, C3}            
+(== t
+            (v (in a x) (in a y)))
+== {def in, C2, C3}
+(== t
+            (v t (in a y)))
+== {pl}
+(== t t)
+QED
+
+Induction Case 1:
+(=>
+    (^
+        (tlp x)
+        (consp x)
+        (! (== a (car x)))
+        (=> (^ (tlp (cdr x)) (tlp y))
+            (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y)))))
+    (=> (^ (tlp x) (tlp y))
+        (== (in a (ap x y))
+            (v (in a x) (in a y)))))
+            
+Exportation:
+(=>
+    (^
+        (tlp x)
+        (consp x)
+        (! (== a (car x)))
+        (=> (^ (tlp (cdr x)) (tlp y))
+            (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y))))
+        (tlp y))
+    (== (in a (ap x y))
+            (v (in a x) (in a y))))
+
+Context:
+C1. (tlp x)
+C2. (consp x)
+C3. (! (== a (car x)))
+C4. (=> (^ (tlp (cdr x)) (tlp y))
+            (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y))))
+C5. (tlp y)
+
+Derived Context:
+D1. (tlp (cdr x)) {C1, C2, def tlp}
+D2. (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y))) {D1, C5, C4, mp}
+
+Goal:
+(== (in a (ap x y))
+            (v (in a x) (in a y)))
+Proof:
+(== (in a (ap x y))
+            (v (in a x) (in a y)))
+== {def ap, C2} 
+(== (in a (cons (car x) (ap (cdr x) y)))
+            (v (in a x) (in a y)))
+== {def in}
+(== (and (consp (cons (car x) (ap (cdr x) y)))
+       (or (== a (car (cons (car x) (ap (cdr x) y))))
+           (in a (cdr (cons (car x) (ap (cdr x) y))))))
+            (v (in a x) (in a y)))
+== {def consp}
+(== (and t
+       (or (== a (car (cons (car x) (ap (cdr x) y))))
+           (in a (cdr (cons (car x) (ap (cdr x) y))))))
+            (v (in a x) (in a y)))
+== {pl}
+(== (or (== a (car (cons (car x) (ap (cdr x) y))))
+           (in a (cdr (cons (car x) (ap (cdr x) y)))))
+            (v (in a x) (in a y)))
+== {cons axioms}
+(== (or (== a (car x))
+           (in a (ap (cdr x) y)))
+            (v (in a x) (in a y)))
+== {C3}
+(== (or nil
+           (in a (ap (cdr x) y)))
+            (v (in a x) (in a y)))
+== {pl}
+(== (in a (ap (cdr x) y))
+            (v (in a x) (in a y)))
+== {D2}
+(== (v (in a (cdr x)) (in a y))
+            (v (in a x) (in a y)))
+== {def in, C2}
+(== (v (in a (cdr x)) (in a y))
+            (v (v (== a (car x)) (in a (cdr x))) (in a y)))
+== {C3, pl}
+(== (v (in a (cdr x)) (in a y))
+            (v (in a (cdr x)) (in a y)))
+QED
+QED
 
 Lemma in-ap2:
 (=> (^ (tlp x) (tlp y))
@@ -46,8 +236,101 @@ Lemma in-ap2:
 
 Proof by: Induction on (tlp x)
 
-XXX
+Base Case 0:
+(=> (! (consp x))
+    (=> (^ (tlp x) (tlp y))
+    (== (in a (ap x y))
+        (v (in a x) (in a y)))))
 
+Exportation:
+(=>
+    (^
+        (! (consp x))
+        (tlp x)
+        (tlp y))
+    (== (in a (ap x y))
+        (v (in a x) (in a y))))
+        
+Context:
+C1. (! (consp x))
+C2. (tlp x)
+C3. (tlp y)
+
+Goal:
+(== (in a (ap x y))
+        (v (in a x) (in a y)))
+
+Proof:
+(== (in a (ap x y))
+        (v (in a x) (in a y)))
+== {def ap, C1}
+(== (in a y)
+        (v (in a x) (in a y)))
+== {def in, C1}
+(== (in a y)
+        (v nil (in a y)))
+== {pl}
+(== (in a y)
+    (in a y))
+QED
+
+Induction Case 1:
+(=> (^
+        (consp x)
+        (=> (^ (tlp (cdr x)) (tlp y))
+            (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y)))))
+    (=> (^ (tlp x) (tlp y))
+        (== (in a (ap x y))
+            (v (in a x) (in a y)))))
+            
+Exportation:
+(=>
+    (^
+        (consp x)
+        (=> (^ (tlp (cdr x)) (tlp y))
+            (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y))))
+        (tlp x)
+        (tlp y))
+    (== (in a (ap x y))
+            (v (in a x) (in a y))))
+            
+Context:
+C1. (consp x)
+C2. (=> (^ (tlp (cdr x)) (tlp y))
+            (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y))))
+C3. (tlp x)
+C4. (tlp y)
+
+Derived Context:
+D1. (tlp (cdr x)) {C1, C3}
+D2. (== (in a (ap (cdr x) y))
+                (v (in a (cdr x)) (in a y))) {D1, C4, C2, mp}
+                
+Goal:
+(== (in a (ap x y))
+            (v (in a x) (in a y)))
+            
+Proof:
+(in a (ap x y))
+== {def ap, C1}
+(in a (cons (car x) (ap (cdr x) y)))
+== {def in}
+(v (== a (car (cons (car x) (ap (cdr x) y)))) (in a (cdr (cons (car x) (ap (cdr x) y)))))
+== {cons axioms}
+(v (== a (car x)) (in a (ap (cdr x) y)))
+== {D2}
+(v (== a (car x)) (v (in a (cdr x)) (in a y)))
+== {pl}
+(v (v (== a (car x)) (in a (cdr x))) (in a y))
+== {def in, C1}
+(v (in a x) (in a y))
+
+QED
+ 
+QED
 #|
 
  Which of the following induction schemes is not viable
@@ -73,12 +356,154 @@ Lemma in-rv:
 
 Proof by: Induction on (rv x)
 
-XXX
+Base Case 0:
+(=>
+    (! (tlp x))
+    (=> (tlp x)
+        (== (in a (rv x))
+            (in a x)))
+)
+
+Exportation:
+(=>
+    (^
+        (! (tlp x))
+        (tlp x)
+    )
+    (== (in a (rv x))
+            (in a x))
+)
+
+Context:
+C1. (! (tlp x))
+C2. (tlp x)
+
+Derived Context:
+D1. nil {C1, C2}
+QED
+
+Base Case 1:
+(=>
+    (=> (tlp x)
+        (endp x))
+    (=> (tlp x)
+        (== (in a (rv x))
+            (in a x))))
+            
+Exportation:
+(=>
+    (^
+        (=> (tlp x)
+            (endp x))
+        (tlp x)
+    )
+    (== (in a (rv x))
+            (in a x))
+)
+
+Context:
+C1. (=> (tlp x)
+            (endp x))
+C2. (tlp x)
+
+Derived Context:
+D1. (endp x) {C2, C1, mp}
+
+Goal: 
+(== (in a (rv x))
+            (in a x))
+            
+Proof:
+(in a (rv x))
+== {D1, def rv}
+(in a x)
+QED
+
+Induction Case 1:
+(=>
+    (^
+        (=> (tlp x)
+            (! (endp x)))
+        (tlp x)
+        (=> 
+            (tlp (cdr x))
+            (== (in a (rv (cdr x)))
+                (in a (cdr x)))
+        )
+    )
+    (=> (tlp x)
+    (== (in a (rv x))
+        (in a x)))
+)
+
+
+Exportation:
+(=>
+    (^
+        (=> 
+            (tlp x)
+            (! (endp x))
+        )
+        (tlp x)
+        (=> 
+            (tlp (cdr x))
+            (== (in a (rv (cdr x)))
+                (in a (cdr x)))
+        )
+    )
+    (== (in a (rv x))
+            (in a x))
+)
+
+Context:
+C1. (=> 
+            (tlp x)
+            (! (endp x))
+        )
+C2. (tlp x)
+C3. (=> 
+            (tlp (cdr x))
+            (== (in a (rv (cdr x)))
+                (in a (cdr x)))
+        )
+        
+Derived Context:
+D1. (! (endp x)) {C1, C2, mp}
+D2. (tlp (cdr x)) {C2, D1}
+D3. (== (in a (rv (cdr x)))
+                (in a (cdr x))) {C3, D2, mp}
+                
+Goal:
+(== (in a (rv x))
+            (in a x))
+            
+Proof:
+(in a (rv x))
+== {def rv, D1}
+(in a (ap (rv (cdr x)) (list (car x))))
+== {lemma in-ap1 ((x (rv (cdr x))) (y (list (car x)))), C2, D2}
+(v (in a (rv (cdr x))) (in a (list (car x))))
+== {D3}
+(v (in a (cdr x)) (in a (list (car x))))
+== {pl}
+(v (in a (list (car x))) (in a (cdr x)))
+== {cons axioms}
+(v (in a (cons (car x) nil)) (in a (cdr x)))
+== {lemma in-ap1 ((x (cons (car x) nil)) (y (cdr x))), D2, cons axioms}
+(in a (ap (cons (car x) nil) (cdr x)))
+== {cons axioms, def ap}
+(in a (cons (car x) (ap nil (cdr x))))
+== {def ap}
+(in a (cons (car x) (cdr x)))
+== {cons axioms, C2, D1}
+(in a x)
+QED
+QED
 
 ; This is a proof of in-rem-dups
 ; Use whatever induction scheme you like.
 Lemma in-rem-dups:
-(=> (tlp x)
+(=> (tlp x)s
     (== (in a (rem-dups x))
         (in a x)))
 
