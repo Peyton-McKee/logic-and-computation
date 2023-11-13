@@ -500,14 +500,307 @@ Proof:
 QED
 QED
 
+
 ; This is a proof of in-rem-dups
 ; Use whatever induction scheme you like.
 Lemma in-rem-dups:
-(=> (tlp x)s
+(=> (tlp x)
     (== (in a (rem-dups x))
         (in a x)))
 
-XXX
+Proof by: Induction on (rem-dups x)
+
+Base Case 0:
+(=>
+    (! (tlp x))
+    (=> (tlp x)
+        (== (in a (rem-dups x))
+            (in a x)))
+)
+
+Exportation:
+(=>
+    (^
+        (! (tlp x))
+        (tlp x)
+    )
+    (== (in a (rem-dups x))
+            (in a x)))
+            
+Context:
+C1. (! (tlp x))
+C2. (tlp x)
+
+Derived Context:
+D1. nil {C1, C2}
+
+QED
+
+Base Case 1:
+(=>
+    (=>
+        (tlp x)
+        (endp x)
+    )
+    (=> (tlp x)
+        (== (in a (rem-dups x))
+            (in a x)))
+)
+
+Exportation:
+(=>
+    (^
+        (=>
+            (tlp x)
+            (endp x)
+        )
+        (tlp x)
+    )
+    (== (in a (rem-dups x))
+            (in a x)))
+            
+Context:
+C1. (=>
+            (tlp x)
+            (endp x)
+        )
+C2. (tlp x)
+
+Derived Context:
+D1. (endp x) {C1, C2, mp}
+
+Goal:
+(== (in a (rem-dups x))
+            (in a x))
+            
+Proof:
+(in a (rem-dups x))
+== {def rem-dups, D1}
+(in a x)
+QED
+
+Induction Case 1:
+(=>
+    (^
+        (=>
+            (tlp x)
+            (^
+                (! (endp x))
+                (in (car x) (cdr x))
+                (== a (car x))
+            )
+        )
+        (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))))
+    )
+    (=> (tlp x)
+        (== (in a (rem-dups x))
+            (in a x)))
+)
+
+Exportation:
+(=>
+    (^
+        (=>
+            (tlp x)
+            (^
+                (! (endp x))
+                (in (car x) (cdr x))
+                (== a (car x))
+            )
+        )
+        (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))))
+        (tlp x)
+    )
+)
+
+Context:
+C1. (=>
+            (tlp x)
+            (^
+                (! (endp x))
+                (in (car x) (cdr x))
+                (== a (car x))
+            )
+        )
+C2. (tlp x)
+C3. (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))))
+
+Derived Context:
+D1. (! (endp x)) {C1, C2, mp}
+D2. (in (car x) (cdr x)) {C1, C2, mp} 
+D3. (== a (car x)) {C1, C2, mp}
+D4. (tlp (cdr x)) {C2, D1}
+D5. (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))) {C3, D4, mp}
+
+Goal:
+(== (in a (rem-dups x))
+            (in a x))
+
+Proof:
+(== (in a (rem-dups x))
+            (in a x))
+== {def rem-dups, D2}
+(== (in a (rem-dups (cdr x)))
+            (in a x))
+== {def in, D1}
+(== (in a (rem-dups (cdr x)))
+            (and (consp x)
+               (or (== a (car x))
+                   (in a (cdr x)))))
+== {D3}
+(== (in a (rem-dups (cdr x)))
+            (and (consp x)
+               (or t
+                   (in a (cdr x)))))
+== {pl}
+(== (in a (rem-dups (cdr x)))
+            (and (consp x)
+               t))
+== {pl}
+(== (in a (rem-dups (cdr x)))
+            (consp x))
+== {C2, D1}
+(== (in a (rem-dups (cdr x)))
+            t)
+== {pl}
+(in a (rem-dups (cdr x)))
+== {D5}
+(in a (cdr x))
+== {D3}
+(in (car x) (cdr x))
+== {D2}
+t
+
+QED
+QED
+#|
+(tlp x)
+
+Base Case 0:
+(=>
+    (! (consp x))
+    (=> (tlp x)
+        (== (in a (rem-dups x))
+            (in a x)))
+)
+
+Exportation:
+(=>
+    (^
+        (! (consp x))
+        (tlp x)
+    )
+    (== (in a (rem-dups x))
+            (in a x))
+)
+
+Context:
+C1. (! (consp x))
+C2. (tlp x)
+
+Derived Context:
+D1. (endp x) {C1, C2}
+
+Goal:
+(== (in a (rem-dups x))
+            (in a x))
+            
+Proof:
+(in a (rem-dups x))
+== {def rem-dups, D1}
+(in a x)
+
+QED
+
+Induction Case 1:
+(=>
+    (=>
+        (consp x)
+        (^
+        (in (car x) (cdr x))
+        (== a (car x))
+        (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))))
+                )
+      )
+    (=> (tlp x)
+        (== (in a (rem-dups x))
+            (in a x)))
+)
+
+Exportation:
+(=>
+    (^
+        (consp x)
+        (in (car x) (cdr x))
+        (== a (car x))
+        (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))))
+        (tlp x)
+    )
+    (== (in a (rem-dups x))
+            (in a x))
+)
+
+Context:
+C1. (consp x)
+C2. (in (car x) (cdr x))
+C3. (== a (car x))
+C4. (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))))
+C5. (tlp x)
+
+Derived Context:
+D1. (tlp (cdr x)) {C1, C5}
+D2. (== (in a (rem-dups (cdr x)))
+                (in a (cdr x))) {D1, C4, mp}
+                
+Goal:
+(== (in a (rem-dups x))
+    (in a x))
+    
+Proof:
+(== (in a (rem-dups x))
+    (in a x))
+== {def rem-dups, C1, C2}
+(== (in a (rem-dups (cdr x)))
+    (in a x))
+== {D2}
+(== (in a (cdr x))
+    (in a x))
+== {C3}
+(== (in (car x) (cdr x))
+    (in a x))
+== {C2}
+(== t
+    (in a x))
+== {def in, C1}
+(== t
+    (or (== a (car x))
+           (in a (cdr x))))
+== {C3}
+(== t
+    (or (== a (car x))
+           (in (car x) (cdr x))))
+== {C2}
+(== t
+    (or (== a (car x))
+           t))
+== {pl}
+(== t t)
+
+QED
+
 
 #|
 
@@ -613,4 +906,4 @@ XXX
 ; whether to accept the return offer from the compiler team or the AI
 ; team. Which one will you choose? Tell us below. (Free points)
 
-"XXX"
+"XXX"|#
