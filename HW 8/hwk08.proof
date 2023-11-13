@@ -500,6 +500,8 @@ Proof:
 QED
 QED
 
+Lemma in-rem-dups2:
+(=> 
 
 ; This is a proof of in-rem-dups
 ; Use whatever induction scheme you like.
@@ -582,205 +584,68 @@ QED
 Induction Case 1:
 (=>
     (^
-        (=>
-            (tlp x)
-            (^
-                (! (endp x))
-                (in (car x) (cdr x))
-                (== a (car x))
-            )
-        )
+        (tlp x)
+        (! (endp x))
+        (in (car x) (cdr x))
         (=> (tlp (cdr x))
             (== (in a (rem-dups (cdr x)))
-                (in a (cdr x))))
-    )
+            (in a (cdr x))))
+        (== a (car x)))
     (=> (tlp x)
-        (== (in a (rem-dups x))
-            (in a x)))
-)
+      (== (in a (rem-dups x))
+          (in a x))))
 
 Exportation:
 (=>
     (^
-        (=>
-            (tlp x)
-            (^
-                (! (endp x))
-                (in (car x) (cdr x))
-                (== a (car x))
-            )
-        )
-        (=> (tlp (cdr x))
-            (== (in a (rem-dups (cdr x)))
-                (in a (cdr x))))
         (tlp x)
-    )
-)
-
+        (! (endp x))
+        (in (car x) (cdr x))
+        (=> (tlp (cdr x))
+        (== (in a (rem-dups (cdr x)))
+            (in a (cdr x)))))
+      (== (in a (rem-dups x))
+        (in a x)))
+        
 Context:
-C1. (=>
-            (tlp x)
-            (^
-                (! (endp x))
-                (in (car x) (cdr x))
-                (== a (car x))
-            )
-        )
-C2. (tlp x)
-C3. (=> (tlp (cdr x))
+C1. (tlp x)
+C2. (! (endp x))
+C3. (in (car x) (cdr x))
+C4. (=> (tlp (cdr x))
             (== (in a (rem-dups (cdr x)))
-                (in a (cdr x))))
-
+            (in a (cdr x))))
+            
 Derived Context:
-D1. (! (endp x)) {C1, C2, mp}
-D2. (in (car x) (cdr x)) {C1, C2, mp} 
-D3. (== a (car x)) {C1, C2, mp}
-D4. (tlp (cdr x)) {C2, D1}
-D5. (== (in a (rem-dups (cdr x)))
-                (in a (cdr x))) {C3, D4, mp}
-
+D1. (tlp (cdr x)) {C1}
+D2. (== (in a (rem-dups (cdr x)))
+            (in a (cdr x))) {D1, C4, mp}
+D3. (consp x) {C1, C2}
+            
 Goal:
 (== (in a (rem-dups x))
-            (in a x))
-
+        (in a x))
+        
 Proof:
 (== (in a (rem-dups x))
-            (in a x))
-== {def rem-dups, D2}
+    (in a x))
+== {def rem-dups, C2, C3}
 (== (in a (rem-dups (cdr x)))
-            (in a x))
-== {def in, D1}
-(== (in a (rem-dups (cdr x)))
-            (and (consp x)
-               (or (== a (car x))
-                   (in a (cdr x)))))
-== {D3}
-(== (in a (rem-dups (cdr x)))
-            (and (consp x)
-               (or t
-                   (in a (cdr x)))))
-== {pl}
-(== (in a (rem-dups (cdr x)))
-            (and (consp x)
-               t))
-== {pl}
-(== (in a (rem-dups (cdr x)))
-            (consp x))
-== {C2, D1}
-(== (in a (rem-dups (cdr x)))
-            t)
-== {pl}
-(in a (rem-dups (cdr x)))
-== {D5}
-(in a (cdr x))
-== {D3}
-(in (car x) (cdr x))
+    (in a x))
 == {D2}
-t
+(== (in a (cdr x))
+    (and (consp x)
+       (or (== a (car x))
+           (in a (cdr x)))))
+== {D3}
+(== (in a (cdr x))
+    (and t
+       (or (== a (car x))
+           (in a (cdr x)))))
+== {pl}
+(== (in a (cdr x))
+       (or (== a (car x))
+           (in a (cdr x))))
 
+    
 QED
 QED
-
- Formalize this property and prove it using the above lemmas.
- Hint: do not use induction, just equational reasoning!
-
- (property (el :all a b c d :tl)
-   (== (in el (rem-dups (rv (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))))
-       (v (in el a) (in el b) (in el c) (in el d))))
-
-|#
-
-Conjecture sanity-check:
-
-XXX
-
-; Prove the following lemma. You will need helper lemmas.
-; Hint: the lecture notes are your friend.
-Lemma rv-rv:
-(=> (tlp x)
-    (== (rv (rv x))
-        x))
-
-; Here is another function that your mentor wants you to reason about.
-(definec make-n-xs (n :nat x :all) :tl
-  (if (zp n)
-      nil
-    (cons x (make-n-xs (1- n) x))))
-
-; She claims that the following is a theorem you should prove.
-; Actually, it isn't a theorem. Think about why and change the RHS as
-; little as possible to make this a theorem and prove it. You can only
-; change the RHS.
-;
-; The prove it using whatever induction scheme you like.
-Lemma in-make-n-xs
-(=> (natp x)
-    (== (in a (make-n-xs x y))
-        (== a y)))
-
-XXX
-
-; Your mentor is busy building her compiler and you have some free
-; time. After doing some LeetCode exercises, you get bored and decide
-; to go talk to the AI team. They are building an AI that can solve
-; recurrence relations. They gave you a few examples that they want to
-; be able to solve.
-;
-; Find closed form solutions and prove them correct.
-
-(definec r1 (n :nat) :pos
-  (if (zp n)
-      1
-    (+ (r1 (1- n)) (expt 2 n))))
-
-; Use whatever induction scheme you like
-Lemma r1-closed-form:
-(= (r1 n)
-   XXX)
-
-XXX
-
-(definec r2 (n :pos) :int
-  :skip-tests t
-  (match n
-    (1 0)
-    (2 3)
-    (3 8)
-    (& (+ (r2 (1- n)) (r2 (- n 2)) (- (r2 (- n 3))) 4))))
-
-; Use whatever induction scheme you like
-Lemma r2-closed-form:
-(= (r2 n)
-   XXX)
-
-XXX
-
-; After doing the above proofs, you decide to see if ACL2s can do this
-; for you.
-;
-; Write Lemma r1-closed-form in ACL2s as a property and see if ACL2s
-; can prove it automatically (use .lisp file for that).
-
-(property (n :nat)
-  (= (r1 n)
-     XXX))
-
-; Write Lemma r2-closed-form in ACL2s as a property and see if ACL2s
-; can prove it automatically (use .lisp file for that).
-
-(property (n :nat)
-  (= (r2 n)
-     XXX))
-
-; This gives you an idea, which you pitch to the AI team. To test
-; their system, they can use their AI solver to propose solutions to
-; recurrences, which then get translated to ACL2s properties that can
-; be checked using testing and/or theorem proving.
-;
-; They try it and find lots of bugs, ah the joys of AI.
-;
-; The one downside of your coop experience is you have to figure out
-; whether to accept the return offer from the compiler team or the AI
-; team. Which one will you choose? Tell us below. (Free points)
-
-"XXX"|#
