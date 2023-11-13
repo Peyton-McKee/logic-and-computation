@@ -586,8 +586,7 @@ Induction Case 1:
         (in (car x) (cdr x))
         (=> (tlp (cdr x))
             (== (in a (rem-dups (cdr x)))
-            (in a (cdr x))))
-        (== a (car x)))
+            (in a (cdr x)))))
     (=> (tlp x)
       (== (in a (rem-dups x))
           (in a x))))
@@ -630,6 +629,9 @@ Proof:
     (in a x))
 == {D2}
 (== (in a (cdr x))
+    (in a x))
+== {def in}
+(== (in a (cdr x))
     (and (consp x)
        (or (== a (car x))
            (in a (cdr x)))))
@@ -640,8 +642,84 @@ Proof:
            (in a (cdr x)))))
 == {pl}
 (== (in a (cdr x))
+    (or (== a (car x))
+        (in a (cdr x))))
+
+QED 
+
+Induction Case 2:
+(=>
+    (^
+        (tlp x)
+        (! (endp x))
+        (! (in (car x) (cdr x)))
+        (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+            (in a (cdr x)))))
+    (=> (tlp x)
+      (== (in a (rem-dups x))
+          (in a x))))
+
+Exportation:
+(=>
+    (^
+        (tlp x)
+        (! (endp x))
+        (! (in (car x) (cdr x)))
+        (=> (tlp (cdr x))
+          (== (in a (rem-dups (cdr x)))
+              (in a (cdr x)))))
+      (== (in a (rem-dups x))
+        (in a x)))
+
+Context:
+C1. (tlp x)
+C2. (! (endp x))
+C3. (! (in (car x) (cdr x)))
+C4. (=> (tlp (cdr x))
+            (== (in a (rem-dups (cdr x)))
+            (in a (cdr x))))
+            
+Derived Context:
+D1. (tlp (cdr x)) {C1}
+D2. (== (in a (rem-dups (cdr x)))
+            (in a (cdr x))) {D1, C4, mp}
+D3. (consp x) {C1, C2}
+            
+Goal:
+(== (in a (rem-dups x))
+        (in a x))
+
+Proof:
+(== (in a (rem-dups x))
+        (in a x))
+== {def rem-dups, C2, C3}
+(== (in a (cons (car x) (rem-dups (cdr x))))
+    (in a x))
+== {def in, cons axioms}
+(== (and (consp (cons (car x) (rem-dups (cdr x))))
+       (or (== a (car x))
+           (in a (rem-dups (cdr x)))))
+    (and (consp x)
+       (or (== a (car x))
+           (in a (cdr x)))))
+== {D3}
+(== (and t
+       (or (== a (car x))
+           (in a (rem-dups (cdr x)))))
+    (and t
+       (or (== a (car x))
+           (in a (cdr x)))))
+== {pl}
+(== (or (== a (car x))
+           (in a (rem-dups (cdr x))))
+       (or (== a (car x))
+           (in a (cdr x))))
+== {D2}
+(== (or (== a (car x))
+           (in a (cdr x)))
        (or (== a (car x))
            (in a (cdr x))))
 
-QED 
+QED
 QED
