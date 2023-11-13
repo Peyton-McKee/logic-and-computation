@@ -500,9 +500,6 @@ Proof:
 QED
 QED
 
-Lemma in-rem-dups2:
-(=> 
-
 ; This is a proof of in-rem-dups
 ; Use whatever induction scheme you like.
 Lemma in-rem-dups:
@@ -602,8 +599,8 @@ Exportation:
         (! (endp x))
         (in (car x) (cdr x))
         (=> (tlp (cdr x))
-        (== (in a (rem-dups (cdr x)))
-            (in a (cdr x)))))
+          (== (in a (rem-dups (cdr x)))
+              (in a (cdr x)))))
       (== (in a (rem-dups x))
         (in a x)))
         
@@ -646,6 +643,5 @@ Proof:
        (or (== a (car x))
            (in a (cdr x))))
 
-    
-QED
+QED 
 QED
