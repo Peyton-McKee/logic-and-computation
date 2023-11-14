@@ -786,6 +786,93 @@ Proof:
 (v (in el a) (in el b) (in el c) (in el d))
 QED
 
+Lemma ap-to-nil:
+(=> (tlp x)
+    (== (ap x nil)
+        x))
+        
+Proof by: Induction on (tlp x)
+
+Base Case 0:
+(=>
+    (! (consp x))
+    (=> (tlp x)
+        (== (ap x nil)
+            x)))
+            
+Exportation:
+(=> (^ (! (consp x))
+        (tlp x))
+    (== (ap x nil)
+    x))
+        
+Context:
+C1. (! (consp x))
+C2. (tlp x)
+
+Derived Context:
+D1. (endp x) {C1, C2}
+
+Goal:
+(== (ap x nil) x)
+
+Proof:
+(ap x nil)
+== {def ap, D1}
+nil
+== {D1}
+x
+
+QED
+
+Induction Case 1:
+(=> (^
+    (consp x)
+    (=> (tlp (cdr x))
+        (== (ap (cdr x) nil)
+            (cdr x))))
+    (=> (tlp x)
+        (== (ap x nil)
+            x)))
+
+Exportation:
+(=> (^ (consp x)
+        (=> (tlp (cdr x))
+                (== (ap (cdr x) nil)
+                    (cdr x)))
+        (tlp x)
+        )
+    (== (ap x nil)
+    x))
+    
+Context:
+C1. (consp x)
+C2. (=> (tlp (cdr x))
+        (== (ap (cdr x) nil)
+            (cdr x)))
+C3. (tlp x)
+
+Derived Context:
+D1. (tlp (cdr x)) {C3}
+D2. (== (ap (cdr x) nil)
+        (cdr x)) {D1, C2, mp}
+        
+Goal:
+(== (ap x nil)
+    x)
+    
+Proof:
+(ap x nil)
+== {def ap, C1}
+(cons (car x) (ap (cdr x) nil))
+== {D2}
+(cons (car x) (cdr x))
+== {cons axioms}
+x
+
+QED
+QED
+
 Lemma ap-rv:
 (=> (^ (tlp x)
        (tlp y))
@@ -795,23 +882,130 @@ Lemma ap-rv:
 Proof by: Induction on (ap x y)
 
 Base Case 0:
-(=> (endp x)
+(=> (! (^ (tlp x)
+          (tlp y)))
     (=> (^ (tlp x)
        (tlp y))
     (== (rv (ap x y))
         (ap (rv y) (rv x)))))
         
 Exportation:
-(=> (^ (! (consp x))
+(=> (^ (! (^ (tlp x)
+          (tlp y)))
        (tlp x)
        (tlp y))
-    (=> (rv (ap x y))
+    (== (rv (ap x y))
         (ap (rv y) (rv x))))
         
 Context:
-C1. (! (consp x))
+C1. (! (^ (tlp x)
+          (tlp y)))
 C2. (tlp x)
 C3. (tlp y)
+
+Derived Context:
+D1. nil {C1, C2}
+
+QED
+
+Induction Case 1:
+(=> (^ (tlp x)
+       (tlp y)
+       (endp x))
+    (=> (^ (tlp x)
+       (tlp y))
+    (== (rv (ap x y))
+        (ap (rv y) (rv x)))))
+        
+Exportation:
+(=> (^ (tlp x)
+       (tlp y)
+       (endp x))
+    (== (rv (ap x y))
+        (ap (rv y) (rv x))))
+        
+Context:
+C1. (tlp x)
+C2. (tlp y)
+C3. (endp x)
+               
+Derived Context:
+D1. (tlp (cdr x)) {C1}
+               
+Goal:
+(== (rv (ap x y))
+        (ap (rv y) (rv x)))
+
+Proof:
+(== (rv (ap x y))
+        (ap (rv y) (rv x)))
+== {def ap, C3}
+(== (rv y)
+    (ap (rv y) (rv x)))
+== {def rv, C3}
+(== (rv y)
+    (ap (rv y) x))
+== {C3, lemma ap-to-nil ((x (rv y)))}
+(== (rv y)
+    (rv y))
+
+QED
+
+Induction Case 2:
+(=> (^ (tlp x)
+       (tlp y)
+       (! (endp x))
+       (=> (^ (tlp (cdr x))
+              (tlp y))
+           (== (rv (ap (cdr x) y))
+                (ap (rv y) (rv (cdr x))))))
+    (=> (^ (tlp x)
+       (tlp y))
+    (== (rv (ap x y))
+        (ap (rv y) (rv x)))))
+        
+Exportation:
+(=> (^ (tlp x)
+        (tlp y)
+        (! (endp x))
+        (=> (^ (tlp (cdr x))
+                (tlp y))
+            (== (rv (ap (cdr x) y))
+                (ap (rv y) (rv (cdr x))))))
+    (== (rv (ap x y))
+        (ap (rv y) (rv x))))
+        
+Context:
+C1. (tlp x)
+C2. (tlp y)
+C3. (! (endp x))
+C4. (=> (^ (tlp (cdr x))
+                (tlp y))
+            (== (rv (ap (cdr x) y))
+                (ap (rv y) (rv (cdr x)))))
+                
+Derived Context:
+D1. (tlp (cdr x)) {C1}
+D2. (== (rv (ap (cdr x) y))
+                (ap (rv y) (rv (cdr x)))) {D1, C4, mp}
+                
+Goal:
+(== (rv (ap x y))
+        (ap (rv y) (rv x)))
+        
+Proof:
+(rv (ap x y))
+== {def ap, C3}
+(rv (cons (car x) (ap (cdr x) y)))
+== {def rv, cons axioms}
+(ap (rv (ap (cdr x) y)) (list (car x)))
+== {D2}
+(ap (ap (rv y) (rv (cdr x))) (list (car x)))
+== {lemma ap-assoc ((x (rv y)) (y (rv (cdr x))) (z (list (car x))))}
+(ap (rv y) (ap (rv (cdr x)) (list (car x))))
+== {def rv, C3}
+(ap (rv y) (rv x))
+
 
 QED
 QED
@@ -880,7 +1074,7 @@ Exportation:
                 (cdr x)))
         (tlp x))
     (== (rv (rv x))
-        (x)))
+        x))
         
 Context:
 C1. (consp x)
@@ -892,15 +1086,116 @@ C3. (tlp x)
 Derived Context:
 D1. (tlp (cdr x)) {C1, C3}
 D2. (== (rv (rv (cdr x)))
-        x) {D1, C2, mp}
+        (cdr x)) {D1, C2, mp}
         
 Goal: (== (rv (rv x))
           x)
 Proof:
 (rv (rv x))
 == {def rv, C1}
-(rv (app (rv (cdr x)) (list (car x))))
-
+(rv (ap (rv (cdr x)) (list (car x))))
+== {lemma ap-rv ((x (rv (cdr x))) (y (list (car x))))}
+(ap (rv (list (car x))) (rv (rv (cdr x))))
+== {def rv, cons axioms}
+(ap (ap (rv nil) (list (car x))) (rv (rv (cdr x))))
+== {D2}
+(ap (ap (rv nil) (list (car x))) (cdr x))
+== {def rv}
+(ap (ap nil (list (car x))) (cdr x))
+== {def ap}
+(ap (list (car x)) (cdr x))
+== {def ap, cons axioms}
+(cons (car x) (ap nil (cdr x)))
+== {def ap}
+(cons (car x) (cdr x))
+== {cons axioms}
+x
 
 QED
 QED
+
+; Here is another function that your mentor wants you to reason about.
+(definec make-n-xs (n :nat x :all) :tl
+  (if (zp n)
+      nil
+    (cons x (make-n-xs (1- n) x))))
+
+; She claims that the following is a theorem you should prove.
+; Actually, it isn't a theorem. Think about why and change the RHS as
+; little as possible to make this a theorem and prove it. You can only
+; change the RHS.
+;
+; The prove it using whatever induction scheme you like.
+Lemma in-make-n-xs
+(=> (natp x)
+    (== (in a (make-n-xs x y))
+        (== a y)))
+
+XXX
+
+; Your mentor is busy building her compiler and you have some free
+; time. After doing some LeetCode exercises, you get bored and decide
+; to go talk to the AI team. They are building an AI that can solve
+; recurrence relations. They gave you a few examples that they want to
+; be able to solve.
+;
+; Find closed form solutions and prove them correct.
+
+(definec r1 (n :nat) :pos
+  (if (zp n)
+      1
+    (+ (r1 (1- n)) (expt 2 n))))
+
+; Use whatever induction scheme you like
+Lemma r1-closed-form:
+(=> (natp n)
+    (= (r1 n)
+       XXX))
+
+XXX
+
+(definec r2 (n :pos) :int
+  :skip-tests t
+  (match n
+    (1 0)
+    (2 3)
+    (3 8)
+    (& (+ (r2 (1- n)) (r2 (- n 2)) (- (r2 (- n 3))) 4))))
+
+; Use whatever induction scheme you like
+Lemma r2-closed-form:
+(=> (posp n)
+    (= (r2 n)
+       XXX))
+
+XXX
+
+; After doing the above proofs, you decide to see if ACL2s can do this
+; for you.
+;
+; Write Lemma r1-closed-form in ACL2s as a property and see if ACL2s
+; can prove it automatically (use .lisp file for that).
+
+(property (n :nat)
+  (= (r1 n)
+     XXX))
+
+; Write Lemma r2-closed-form in ACL2s as a property and see if ACL2s
+; can prove it automatically (use .lisp file for that).
+
+(property (n :pos)
+  (= (r2 n)
+     XXX))
+
+; This gives you an idea, which you pitch to the AI team. To test
+; their system, they can use their AI solver to propose solutions to
+; recurrences, which then get translated to ACL2s properties that can
+; be checked using testing and/or theorem proving.
+;
+; They try it and find lots of bugs, ah the joys of AI.
+;
+; The one downside of your coop experience is you have to figure out
+; whether to accept the return offer from the compiler team or the AI
+; team. Which one will you choose? Tell us below. (Free points)
+
+"The compiler team"
