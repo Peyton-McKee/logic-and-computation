@@ -1148,11 +1148,116 @@ XXX
 
 ; Use whatever induction scheme you like
 Lemma r1-closed-form:
-(=> (natp n)
-    (= (r1 n)
-       XXX))
+(=> (natp x)
+	(= (r1 x)
+   	(1- (expt 2 (1+ x)))))
 
-XXX
+Proof by: Induction on (r1 x)
+
+Base case 0:
+(=> (! (natp x))
+	(=> (natp x)
+    	(= (r1 x) (1- (expt 2 (1+ x))))))
+
+Exportation:
+(=> (^ (! (natp x))
+		(natp x))
+     (= (r1 x) (1- (expt 2 (1+ x)))))
+     
+Context:
+C1. (! (natp x))
+C2. (natp x)
+
+Derived Context:
+D1. nil {C1, C2}
+
+QED 
+
+Base case 1:
+(=> (^ 
+	(natp x)
+	(zp x))
+	(=> 
+		(natp x)
+		(= (r1 x)
+			(1- (expt 2 (1+ x)))
+		)
+))
+
+Exportation:
+(=> (^ (natp x)
+	   (zp x))
+	 (= (r1 x)
+	 	(1- (expt 2 (1+ x)))
+))
+
+Context:
+C1. (natp x)
+C2. (zp x)
+
+Derived Context:
+D1. (= 1 (1- (expt 2 (1+ x)))) {C1, C2, Arith}
+D2. (= 1 (r1 x)) {C1, C2, Arith, Def r1}
+
+Goal:
+(= (r1 x) (1- (expt 2 (1+ x))))
+
+Proof:
+(= (r1 x) (1- (expt 2 (1+ x))))
+== { D1, D2 }
+(= 1 1)
+== {Obvious}
+t
+QED
+
+Induction Case 0:
+(=>
+  (^ (NATP X) (! (ZP X))
+       (=> (NATP (+ -1 X)) (= (R1 (+ -1 X)) (+ -1 (EXPT 2 (+ 1 -1 X))))))
+  (=> (NATP X) (= (R1 X) (+ -1 (EXPT 2 (+ 1 X))))))
+
+Exportation:
+(=> (^ (natp x)
+	   (! (zp x))
+       (=> (natp (1- x))
+        	(= (r1 (1- x))
+		    (1- (expt 2 (1- (1+ x))))
+		)))
+	(= (r1 x)
+	 	(1- (expt 2 (1+ x)))
+))
+
+
+Context:
+C1. (natp x)
+C2. (! (zp x))
+C3. (=> (natp (1- x))
+        	(= (r1 (1- x))
+		    (1- (expt 2 (1- (1+ x))))))
+
+Derived Context:
+D1. (= (r1 x) (+ (r1 (1- x)) (expt 2 x))) { Def r1, C2 }
+D2. (natp (1- x)) { C1, C2 }
+D3. (= (r1 (1- x))
+		    (1- (expt 2 x))) { C3, D2, MP, Arith }
+
+Goal: 
+(= (r1 x)
+	 	(1- (expt 2 (1+ x))))
+
+Proof:
+(= (r1 x)
+	 	(1- (expt 2 (1+ x))))
+== { D1 }
+(= (+ (r1 (1- x)) (expt 2 x)) (1- (expt 2 (1+ x))))
+== { D3 }
+(= (+ (1- (expt 2 x)) (expt 2 x)) (1- (expt 2 (1+ x))))
+== { Arith }
+t
+
+QED
+QED
+
 
 (definec r2 (n :pos) :int
   :skip-tests t
@@ -1165,10 +1270,181 @@ XXX
 ; Use whatever induction scheme you like
 Lemma r2-closed-form:
 (=> (posp n)
-    (= (r2 n)
-       XXX))
+	(= (r2 n)
+   	(1- (expt n 2))))
 
-XXX
+Proof by: Induction on (r2 n)
+
+Base case 0: 
+(=> (! (posp n))
+	(=> (posp n)
+	(= (r2 n)
+   		(1- (expt n 2)))))
+
+Exportation:
+(=> (^ (! (posp n))
+		(posp n))
+	(= (r2 n)
+   (1- (expt n 2)))
+)
+
+Context:
+C1. (posp n)
+C2. (! (posp n))
+
+Derived Context:
+D1. nil { C1, C2 }
+
+QED
+
+Base Case 1:
+(IMPLIES (AND (POSP N) (EQL N 1))
+          (IMPLIES (POSP N) (= (R2 N) (+ -1 (EXPT N 2)))))
+
+Exportation:
+(=> (^ (posp n)
+	   (= 1 n))
+   (= (r2 n)
+   	(1- (expt n 2))))
+   	
+Context:
+C1. (posp n)
+C2. (= 1 n)
+
+Derived Context:
+D1. (= 0 (r2 n)) { C1, C2, def r2 }
+D2. (= 0 (1- (expt n 2))) { C1, C2, Arith }
+
+Goal:
+ (= (r2 n)
+   	(1- (expt n 2)))
+
+Proof:
+(= (r2 n)
+   	(1- (expt n 2)))
+== { D1, D2 }
+(= 0 0)
+== { Obvious }
+t
+
+QED
+
+Base Case 2:
+ (IMPLIES (AND (POSP N) (EQL N 2))
+          (IMPLIES (POSP N) (= (R2 N) (+ -1 (EXPT N 2)))))
+
+Exportation:
+(=> (^ (posp n)
+	   (= 2 n))
+   (= (r2 n)
+   	(1- (expt n 2))))
+   	
+Context:
+C1. (posp n)
+C2. (= 2 n)
+
+Derived Context:
+D1. (= 3 (r2 n)) { C1, C2, def r2 }
+D2. (= 3 (1- (expt n 2))) { C1, C2, Arith }
+
+Goal:
+ (= (r2 n)
+   	(1- (expt n 2)))
+
+Proof:
+(= (r2 n)
+   	(1- (expt n 2)))
+== { D1, D2 }
+(= 3 3)
+== { Obvious }
+t
+
+QED
+
+Base Case 3:
+ (IMPLIES (AND (POSP N) (EQL N 3))
+          (IMPLIES (POSP N) (= (R2 N) (+ -1 (EXPT N 2)))))
+
+Exportation:
+(=> (^ (posp n)
+	   (= 3 n))
+   (= (r2 n)
+   	(1- (expt n 2))))
+   	
+Context:
+C1. (posp n)
+C2. (= 3 n)
+
+Derived Context:
+D1. (= 8 (r2 n)) { C1, C2, def r2 }
+D2. (= 8 (1- (expt n 2))) { C1, C2, Arith }
+
+Goal:
+ (= (r2 n)
+   	(1- (expt n 2)))
+
+Proof:
+(= (r2 n)
+   	(1- (expt n 2)))
+== { D1, D2 }
+(= 8 8)
+== { Obvious }
+t
+
+QED
+Induction Case 0:
+(IMPLIES
+  (AND (POSP N) (NOT (EQL N 1)) (NOT (EQL N 2)) (NOT (EQL N 3)) (NOT NIL)
+       (IMPLIES (POSP (+ -1 N)) (= (R2 (+ -1 N)) (+ -1 (EXPT (+ -1 N) 2))))
+       (IMPLIES (POSP (+ -2 N)) (= (R2 (+ -2 N)) (+ -1 (EXPT (+ -2 N) 2))))
+       (IMPLIES (POSP (+ -3 N)) (= (R2 (+ -3 N)) (+ -1 (EXPT (+ -3 N) 2)))))
+  (IMPLIES (POSP N) (= (R2 N) (+ -1 (EXPT N 2)))))
+
+Exportation:
+(=> (^ (posp n)
+	   (! (= n 1))
+       (! (= n 2))
+       (! (= n 3))
+       (! nil)
+       (IMPLIES (POSP (+ -1 N)) (= (R2 (+ -1 N)) (+ -1 (EXPT (+ -1 N) 2))))
+       (IMPLIES (POSP (+ -2 N)) (= (R2 (+ -2 N)) (+ -1 (EXPT (+ -2 N) 2))))
+       (IMPLIES (POSP (+ -3 N)) (= (R2 (+ -3 N)) (+ -1 (EXPT (+ -3 N) 2)))))
+   (= (r2 n)
+   	(1- (expt n 2))))
+   	
+Context:
+C1. (posp n)
+C2. (! (= n 1))
+C3. (! (= n 2))
+C4. (! (= n 3))
+C5. (! nil)
+C6. (IMPLIES (POSP (+ -1 N)) (= (R2 (+ -1 N)) (+ -1 (EXPT (+ -1 N) 2))))
+C7. (IMPLIES (POSP (+ -2 N)) (= (R2 (+ -2 N)) (+ -1 (EXPT (+ -2 N) 2))))
+C8. (IMPLIES (POSP (+ -3 N)) (= (R2 (+ -3 N)) (+ -1 (EXPT (+ -3 N) 2))))
+
+Derived Context:
+D1. (> n 3) {C1, C2, C3, C4}
+D2. (posp (1- n)) {D1}
+D3. (posp (+ -2 n)) {D1}
+D4. (posp (+ -3 n)) {D1}
+D5. (= (R2 (+ -1 N)) (+ -1 (EXPT (+ -1 N) 2))) {C6, D2, MP}
+D6. (= (R2 (+ -2 N)) (+ -1 (EXPT (+ -2 N) 2))) {C7, D3, MP}
+D7. (= (R2 (+ -3 N)) (+ -1 (EXPT (+ -3 N) 2))) {C8, D4, MP}
+
+Goal:
+ (= (r2 n)
+   	(1- (expt n 2)))
+
+Proof:
+(= (r2 n)
+   	(1- (expt n 2)))
+== { D5, D6, D7 }
+(== (+ (r2 (1- n)) (r2 (- n 2)) (- (r2 (- n 3))) 4) (1- (expt n 2)))
+== {Arith}
+t
+QED
+QED
+
 
 ; After doing the above proofs, you decide to see if ACL2s can do this
 ; for you.
@@ -1178,14 +1454,14 @@ XXX
 
 (property (n :nat)
   (= (r1 n)
-     XXX))
+     (1- (expt 2 (1+ n)))))
 
 ; Write Lemma r2-closed-form in ACL2s as a property and see if ACL2s
 ; can prove it automatically (use .lisp file for that).
 
 (property (n :pos)
   (= (r2 n)
-     XXX))
+     (1- (expt n 2))))
 
 ; This gives you an idea, which you pitch to the AI team. To test
 ; their system, they can use their AI solver to propose solutions to
