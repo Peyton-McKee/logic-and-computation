@@ -337,7 +337,7 @@ QED
  to prove Conjecture in-ap2?
  
  1. (ap x y)
- 2. (in a y)
+ 2. (in a y) <--
 
  Explain why not by showing where a proof attempt using the non-viable
  induction scheme fails.
@@ -720,6 +720,187 @@ Proof:
            (in a (cdr x)))
        (or (== a (car x))
            (in a (cdr x))))
+
+QED
+QED
+
+#|
+
+ Formalize this property and prove it using the above lemmas.
+ Hint: do not use induction, just equational reasoning!
+
+ (property (el :all a b c d :tl)
+   (== (in el (rem-dups (rv (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))))
+       (v (in el a) (in el b) (in el c) (in el d))))
+
+|#
+
+Conjecture sanity-check:
+
+(=>
+    (^
+        (allp el)
+        (tlp a)
+        (tlp b)
+        (tlp c)
+        (tlp d)
+    )
+    (== (in el (rem-dups (rv (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))))
+       (v (in el a) (in el b) (in el c) (in el d)))
+)
+
+Context:
+C1. (allp el)
+C2. (tlp a)
+C3. (tlp b)
+C4. (tlp c)
+C5. (tlp d)
+
+Goal:
+(== (in el (rem-dups (rv (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))))
+       (v (in el a) (in el b) (in el c) (in el d)))
+       
+Proof:
+(in el (rem-dups (rv (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))))
+== {lemma in-rem-dups ((a el) (x (rv (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))))}
+(in el (rv (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d)))))
+== {lemma in-rv ((a el) (x (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d)))))}
+(in el (rem-dups (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))
+== {lemma in-rem-dups ((a el) (x (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d))))}
+(in el (rv (ap (rv (ap (rv (ap a b)) (ap a c))) d)))
+== {lemma in-rv ((a el) (x (ap (rv (ap (rv (ap a b)) (ap a c))) d)))}
+(in el (ap (rv (ap (rv (ap a b)) (ap a c))) d))
+== {lemma in-ap1 ((a el) (x (rv (ap (rv (ap a b)) (ap a c)))) (y d))}
+(v (in el (rv (ap (rv (ap a b)) (ap a c)))) (in el d))
+== {lemma in-rv ((a el) (x (ap (rv (ap a b)) (ap a c))))}
+(v (in el (ap (rv (ap a b)) (ap a c))) (in el d))
+== {lemma in-ap1 ((a el) (x (rv (ap a b))) (y (ap a c)))}
+(v (v (in el (rv (ap a b))) (in el (ap a c))) (in el d))
+== {lemma in-rv ((a el) (x (ap a b)))}
+(v (v (in el (ap a b)) (in el (ap a c))) (in el d))
+== {lemma in-ap1 ((a el) (x a) (y b))}
+(v (v (v (in el a) (in el b)) (in el (ap a c))) (in el d))
+== {lemma in-ap1 ((a el) (x a) (y c))}
+(v (v (v (in el a) (in el b)) (v (in el a) (in el c))) (in el d))
+== {pl}
+(v (in el a) (in el b) (in el c) (in el d))
+QED
+
+Lemma ap-rv:
+(=> (^ (tlp x)
+       (tlp y))
+    (== (rv (ap x y))
+        (ap (rv y) (rv x))))
+        
+Proof by: Induction on (ap x y)
+
+Base Case 0:
+(=> (endp x)
+    (=> (^ (tlp x)
+       (tlp y))
+    (== (rv (ap x y))
+        (ap (rv y) (rv x)))))
+        
+Exportation:
+(=> (^ (! (consp x))
+       (tlp x)
+       (tlp y))
+    (=> (rv (ap x y))
+        (ap (rv y) (rv x))))
+        
+Context:
+C1. (! (consp x))
+C2. (tlp x)
+C3. (tlp y)
+
+QED
+QED
+
+
+; Prove the following lemma. You will need helper lemmas.
+; Hint: the lecture notes are your friend.
+Lemma rv-rv:
+(=> (tlp x)
+    (== (rv (rv x))
+        x))
+        
+Proof by: Induction on (tlp x)
+
+Base Case 0:
+(=>
+    (! (consp x))
+    (=> (tlp x)
+    (== (rv (rv x))
+        x)))
+        
+Exportation:
+(=>
+    (^
+        (! (consp x))
+        (tlp x))
+    (== (rv (rv x))
+        x))
+        
+Context:
+C1. (! (consp x))
+C2. (tlp x)
+
+Derived Context:
+D1. (endp x) {C1, C2}
+
+Goal:
+(== (rv (rv x))
+        x)
+Proof:
+(rv (rv x))
+== {def rv, D1}
+(rv x)
+== {def rv, D1}
+x
+
+QED
+
+Induction Case 1:
+(=>
+    (^
+        (consp x)
+        (=> (tlp (cdr x))
+            (== (rv (rv (cdr x)))
+                (cdr x))))
+    (=> (tlp x)
+    (== (rv (rv x))
+        x)))
+        
+Exportation:
+(=>
+    (^
+        (consp x)
+        (=> (tlp (cdr x))
+            (== (rv (rv (cdr x)))
+                (cdr x)))
+        (tlp x))
+    (== (rv (rv x))
+        (x)))
+        
+Context:
+C1. (consp x)
+C2. (=> (tlp (cdr x))
+            (== (rv (rv (cdr x)))
+                (cdr x)))
+C3. (tlp x)
+
+Derived Context:
+D1. (tlp (cdr x)) {C1, C3}
+D2. (== (rv (rv (cdr x)))
+        x) {D1, C2, mp}
+        
+Goal: (== (rv (rv x))
+          x)
+Proof:
+(rv (rv x))
+== {def rv, C1}
+(rv (app (rv (cdr x)) (list (car x))))
+
 
 QED
 QED
