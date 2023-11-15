@@ -1359,25 +1359,26 @@ QED
     (2 3)
     (3 8)
     (& (+ (r2 (1- n)) (r2 (- n 2)) (- (r2 (- n 3))) 4))))
+    
+(memoize 'r2)
 
-; Use whatever induction scheme you like
 Lemma r2-closed-form:
 (=> (posp n)
-	(= (r2 n)
-   	(1- (expt n 2))))
+    (= (r2 n)
+    (1- (expt n 2))))
 
 Proof by: Induction on (r2 n)
 
 Base case 0: 
 (=> (! (posp n))
-	(=> (posp n)
-	(= (r2 n)
-   		(1- (expt n 2)))))
+    (=> (posp n)
+    (= (r2 n)
+        (1- (expt n 2)))))
 
 Exportation:
 (=> (^ (! (posp n))
-		(posp n))
-	(= (r2 n)
+        (posp n))
+    (= (r2 n)
    (1- (expt n 2)))
 )
 
@@ -1396,10 +1397,10 @@ Base Case 1:
 
 Exportation:
 (=> (^ (posp n)
-	   (= 1 n))
+       (= 1 n))
    (= (r2 n)
-   	(1- (expt n 2))))
-   	
+    (1- (expt n 2))))
+    
 Context:
 C1. (posp n)
 C2. (= 1 n)
@@ -1410,11 +1411,11 @@ D2. (= 0 (1- (expt n 2))) { C1, C2, Arith }
 
 Goal:
  (= (r2 n)
-   	(1- (expt n 2)))
+    (1- (expt n 2)))
 
 Proof:
 (= (r2 n)
-   	(1- (expt n 2)))
+    (1- (expt n 2)))
 == { D1, D2 }
 (= 0 0)
 == { Obvious }
@@ -1428,10 +1429,10 @@ Base Case 2:
 
 Exportation:
 (=> (^ (posp n)
-	   (= 2 n))
+       (= 2 n))
    (= (r2 n)
-   	(1- (expt n 2))))
-   	
+    (1- (expt n 2))))
+    
 Context:
 C1. (posp n)
 C2. (= 2 n)
@@ -1442,11 +1443,11 @@ D2. (= 3 (1- (expt n 2))) { C1, C2, Arith }
 
 Goal:
  (= (r2 n)
-   	(1- (expt n 2)))
+    (1- (expt n 2)))
 
 Proof:
 (= (r2 n)
-   	(1- (expt n 2)))
+    (1- (expt n 2)))
 == { D1, D2 }
 (= 3 3)
 == { Obvious }
@@ -1460,10 +1461,10 @@ Base Case 3:
 
 Exportation:
 (=> (^ (posp n)
-	   (= 3 n))
+       (= 3 n))
    (= (r2 n)
-   	(1- (expt n 2))))
-   	
+    (1- (expt n 2))))
+    
 Context:
 C1. (posp n)
 C2. (= 3 n)
@@ -1474,11 +1475,11 @@ D2. (= 8 (1- (expt n 2))) { C1, C2, Arith }
 
 Goal:
  (= (r2 n)
-   	(1- (expt n 2)))
+    (1- (expt n 2)))
 
 Proof:
 (= (r2 n)
-   	(1- (expt n 2)))
+    (1- (expt n 2)))
 == { D1, D2 }
 (= 8 8)
 == { Obvious }
@@ -1495,7 +1496,7 @@ Induction Case 0:
 
 Exportation:
 (=> (^ (posp n)
-	   (! (= n 1))
+       (! (= n 1))
        (! (= n 2))
        (! (= n 3))
        (! nil)
@@ -1503,8 +1504,8 @@ Exportation:
        (IMPLIES (POSP (+ -2 N)) (= (R2 (+ -2 N)) (+ -1 (EXPT (+ -2 N) 2))))
        (IMPLIES (POSP (+ -3 N)) (= (R2 (+ -3 N)) (+ -1 (EXPT (+ -3 N) 2)))))
    (= (r2 n)
-   	(1- (expt n 2))))
-   	
+    (1- (expt n 2))))
+    
 Context:
 C1. (posp n)
 C2. (! (= n 1))
@@ -1526,14 +1527,16 @@ D7. (= (R2 (+ -3 N)) (+ -1 (EXPT (+ -3 N) 2))) {C8, D4, MP}
 
 Goal:
  (= (r2 n)
-   	(1- (expt n 2)))
+    (1- (expt n 2)))
 
 Proof:
 (= (r2 n)
-   	(1- (expt n 2)))
-== { D5, D6, D7 }
-(== (+ (r2 (1- n)) (r2 (- n 2)) (- (r2 (- n 3))) 4) (1- (expt n 2)))
-== {Arith}
+    (1- (expt n 2)))
+== { D5, D6, D7, def r2 }
+(= (+ (r2 (1- n)) (r2 (- n 2)) (- (r2 (- n 3))) 4) (1- (expt n 2)))
+== {Arith, D5, D6, D7}
+(= (+ (+ -1 (EXPT (+ -1 N) 2)) (+ -1 (EXPT (+ -2 N) 2)) (- (+ -1 (EXPT (+ -3 N) 2))) 4) (1- (expt n 2)))
+== {arith, eval}
 t
 QED
 QED
