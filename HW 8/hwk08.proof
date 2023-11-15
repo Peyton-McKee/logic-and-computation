@@ -342,7 +342,21 @@ QED
  Explain why not by showing where a proof attempt using the non-viable
  induction scheme fails.
 
- XXX
+ Base case:
+ (=>
+    (^
+        (! (consp y))
+        (tlp x)
+        (tlp y))
+    (== (in a (ap x y))
+        (v (in a x) (in a y))))
+        
+To prove this base case, we start with the goal: 
+(== (in a (ap x y))
+        (v (in a x) (in a y)))
+        
+However, neither in nor ap can be expanded upon without more information on x, and this
+a proof fails
 
 |#
 
