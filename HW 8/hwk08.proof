@@ -1126,12 +1126,91 @@ QED
 ; change the RHS.
 ;
 ; The prove it using whatever induction scheme you like.
-Lemma in-make-n-xs
+Lemma in-make-n-xs:
 (=> (natp x)
-    (== (in a (make-n-xs x y))
+    (=> (in a (make-n-xs x y))
         (== a y)))
 
-XXX
+Proof by: Induction on (make-n-xs x y)
+
+Base Case 0:
+(=> (! (natp x))
+	(=> (natp x)
+    	(== (^ (in a (make-n-xs x y)) (< 0 x))
+        	(== a y))))
+        
+Exportation:
+(=> (^	(! (natp x))
+		(natp x))
+    (== (^ (in a (make-n-xs x y)) (< 0 x))
+        (== a y)))
+    
+Context:
+C1. (! (natp x))
+C2. (natp x)
+
+Derived Context:
+D1. nil {C1, C2}
+
+QED
+
+Base Case 1:
+(=> (^ (natp x) (zp x))
+	(=> (natp x)
+    	(=> (in a (make-n-xs x y))
+        	(== a y))))
+        
+Exportation:
+(=> (^	(natp x)
+		(zp x)
+    	(in a (make-n-xs x y)))
+    (== a y))
+    
+Context:
+C1. (natp x)
+C2. (zp x)
+C3. (in a (make-n-xs x y))
+
+Derived Context:
+D1. (in a nil) { def make-n-xs, C2, C3 }
+D2. nil { def in, D1 }
+
+QED
+
+Induction Case 1:
+(=>	(^	(natp x)
+		(! (zp x))
+		(=> (natp (+ -1 x))
+        	(=> (in a (make-n-xs (+ -1 x) y)) (== a y))))
+    (=> (natp x) (=> (in a (make-n-xs x y)) (== a y))))
+
+Exportation:
+(=>	(^	(natp x)
+		(! (zp x))
+		(=> (^	(natp (+ -1 x))
+        		(in a (make-n-xs (+ -1 x) y)))
+            (== a y))
+        (in a (make-n-xs x y)))
+    (== a y))
+
+Context:
+C1. (natp x)
+C2. (! (zp x))
+C3. (=> (^	(natp (+ -1 x))
+        	(in a (make-n-xs (+ -1 x) y)))
+        (== a y))
+C4. (in a (make-n-xs x y))
+
+Derived Context:
+D1. (natp (+ -1 x)) { C2 }
+D2. (in a (cons y (make-n-xs (1- x) y))) { def make-n-xs, C2, C4 }
+D3. (v (== a y) (in a (make-n-xs (1- x) y))) { def in, cons axioms, D2 }
+D4. (v (== a y) (== a y)) { mp, C3, D3, D1 }
+
+Goal: (== a y)
+
+QED
+QED
 
 ; Your mentor is busy building her compiler and you have some free
 ; time. After doing some LeetCode exercises, you get bored and decide
