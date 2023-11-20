@@ -263,54 +263,52 @@
  You will need some extra lemmas (helper theorems).
 
 |#
-lemma L1:
-(=> (^ (rational a) (lor l))
-	(== (isort (less a l) (less a (isort l))))
-)
-
-proof by: Equational Reasoning
-
-Conjecture 0:
-(=> (^ (ratinal a) (lor l) (endp l))
-	(== (isort (less a l)) (less a (isort l)))
-)
-
+Lemma L1a:
+(=>
+  (^ (rationalp a) (lorp l) (endp l))
+    (=> (^ (rationalp a) (lorp l))
+  (== (isort (less a l)) (less a (isort l)))))
+    
+Exportation:
+(=>
+  (^ (rationalp a) (lorp l) (endp l))
+    (== (isort (less a l)) (less a (isort l))))
+    
 Context:
-C1. (rational a)
-C2. (lor l)
+C1. (rationalp a)
+C2. (lorp l)
 C3. (endp l)
 
-Derived Context:
-D1. (== (isort (less a l)) (isort '())) { def less, C2, C3 }
-D2. (== (isort (less a l)) '()) { D1, def isort }
-D3. (== (less (a (isort l))) (less a '())) { C2, C3, def isort }
-D4. (== (less (a (isort l))) '()) {D3, def less}
-
 Goal:
-(== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
+(== (isort (less a l)) (less a (isort l)))
 
-proof: 
-(== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
-== {D2, D4}
-(== '() '())
-== {obvious}
-t
+Proof:
+(== (isort (less a l)) (less a (isort l)))
+== {def less, C3}
+(== (isort l) (less a (isort l)))
+== {def isort, C3}
+(== nil (less a nil))
+== {def less, eval}
+(== nil nil)
 
 QED
 
+Lemma L1b:
+
+#|
 Conjecture 1:
 
 QED
 lemma L2:
 (=> (lor x)
-	(== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
+  (== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
 )
 
 proof by: Equational Reasoning
 
 Conjecture 0:
 (=> (lor x)
-	(== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
+  (== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
 )
 
 Context: 
@@ -327,21 +325,21 @@ QED
 
 lemma L3:
 (=> (lor x)
-	(=> (orderedp (rest x))
-		(== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
-	)
+  (=> (orderedp (rest x))
+    (== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
+  )
 )
 Conjecture 0:
 (=> (lor x)
-	(=> (orderedp (rest x))
-		(== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
-	)
+  (=> (orderedp (rest x))
+    (== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
+  )
 )
 
 Exportation:
 (=> (^ (lor x)
-	   (orderedp (rest x)))
-	(== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
+     (orderedp (rest x)))
+  (== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
 )
 
 Context:
@@ -360,21 +358,21 @@ QED
 
 lemma q=isort:
 (=> (lor x)
-	(== (qsort x) (isort x)))
+  (== (qsort x) (isort x)))
 
 proof by: induction on (qsort x)
 
 Base Case 0:
 (=> (! (lor x))
-	(=> (lor x)
-		(== (qsort x) (isort x))
-	)
+  (=> (lor x)
+    (== (qsort x) (isort x))
+  )
 )
 
 Exportation:
 (=> (^ (! (lor x))
-	(lor x))
-	(== qsort x) (isort x))
+  (lor x))
+  (== qsort x) (isort x))
 
 Context:
 C1. (! (lor x))
@@ -399,4 +397,4 @@ Base Case 1:
    (== (msort l)
        (qsort l)))
 
-|#
+|#|#
