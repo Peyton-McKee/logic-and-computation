@@ -263,129 +263,322 @@
  You will need some extra lemmas (helper theorems).
 
 |#
-Lemma L1a:
+Lemma L1:
 (=>
-  (^ (rationalp a) (lorp l) (endp l))
+  (^ (rationalp a) (lorp l))
     (=> (^ (rationalp a) (lorp l))
   (== (isort (less a l)) (less a (isort l)))))
     
+proof by: induction on (lorp l)
+
+Base Case 0:
+(IMPLIES (AND (NOT (ATOM L)) (NOT (RATIONALP (CAR L))))
+          (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
+                   (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
+                            (EQUAL (ISORT (LESS A L)) (LESS A (ISORT L))))))
+
 Exportation:
 (=>
-  (^ (rationalp a) (lorp l) (endp l))
+  (^ (rationalp a) (lorp l) (! (lorp l)))
     (== (isort (less a l)) (less a (isort l))))
     
 Context:
 C1. (rationalp a)
 C2. (lorp l)
-C3. (endp l)
+C3. (! (lorp l))
+
+Derived Context:
+D1. nil { C2, C3 }
+QED
+
+Base Case 1:
+ (IMPLIES (ATOM L)
+          (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
+                   (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
+                            (EQUAL (ISORT (LESS A L)) (LESS A (ISORT L))))))
+
+Exportation:
+(=> (^ (lorp l) (endp l) (rationalp a))
+	  (== (isort (less a l)) (less a (isort l))))
+	
+Context:
+C1. (lorp l)
+C2. (endp l)
+C3. (rationalp a)
 
 Goal:
 (== (isort (less a l)) (less a (isort l)))
 
 Proof:
 (== (isort (less a l)) (less a (isort l)))
-== {def less, C3}
+== {def less,C2 }
 (== (isort l) (less a (isort l)))
-== {def isort, C3}
+== {def isort, C2}
 (== nil (less a nil))
 == {def less, eval}
 (== nil nil)
 
 QED
 
-Lemma L1b:
+Induction Case 1:
+(IMPLIES
+  (AND (NOT (ATOM L)) (RATIONALP (CAR L))
+       (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP (CDR L)))
+                (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP (CDR L)))
+                         (EQUAL (ISORT (LESS A (CDR L)))
+                                (LESS A (ISORT (CDR L)))))))
+  (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
+           (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
+           	                    (EQUAL (ISORT (LESS A L)) (LESS A (ISORT L))))))
 
-#|
-Conjecture 1:
+Exportation: 
+(=> (^ (rationalp a) (lorp l) (! (endp l))
+	(=> (lorp (cdr l))
+		(== (isort (less a (cdr l))) (less a (isort (cdr l))))))
+	(== (isort (less a l)) (less a (isort l))))
 
+Context:
+C1. (rationalp a)
+C2. (lorp l)
+C3. (! (endp l))
+C4. (=> (lorp (cdr l))
+		(== (isort (less a (cdr l))) (less a (isort (cdr l)))))
+
+Derived Context:
+D1.(== (isort (less a (cdr l))) (less a (isort (cdr l)))) { C4, MP }
+
+Goal:
+(== (isort (less a l)) (less a (isort l)))
+
+Proof: 
+(less a (isort l))
+== {def isort, C3}
+(less a (insert (car l) (isort (cdr l))))
+== {def insert }
+(less a ())
 QED
+QED
+
 lemma L2:
-(=> (lor x)
-  (== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
+(=> (^ (lorp x) (rationalp a))
+  (== (isort (notless a x)) (notless a (isort x)))
 )
 
-proof by: Equational Reasoning
+proof by: Induction on (lorp x)
 
-Conjecture 0:
-(=> (lor x)
-  (== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
+Base Case 0:
+(IMPLIES (AND (NOT (ATOM X)) (NOT (RATIONALP (CAR X))))
+          (IMPLIES (AND (RATIONAL-LISTP X) (RATIONALP A))
+                   (EQUAL (ISORT (NOTLESS A X)) (NOTLESS A (ISORT X)))))
+                          
+Exportation:
+(=> (^ (! (lorp x)) (lorp x) (rationalp a))
+	(== (isort (notless a x)) (notless a (isort x)))
+)
+Context: 
+C1. (! (lorp x))
+C2. (lorp x)
+C3. (rationalp a)
+
+Derived Context:
+D1. nil {C1, C2}
+QED
+
+Base Case 1:
+ (IMPLIES (ATOM X)
+          (IMPLIES (AND (RATIONAL-LISTP X) (RATIONALP A))
+                   (EQUAL (ISORT (NOTLESS A X)) (NOTLESS A (ISORT X)))))
+
+Exportation:
+(=> (^ (lorp x) (endp x) (rationalp a))
+	(== (isort (notless a x)) (notless a (isort x)))
 )
 
 Context: 
-C1. (lor x)
+C1. (lorp x)
+C2. (endp x)
+C3. (rationalp a)
 
 Derived Context:
 
 Goal:
-(== (isort (notless (head x) (rest x))) (notless (head x) (isort (rest x))))
+(== (isort (notless a x)) (notless a (isort x)))
 
-proof: 
+proof:
+(== (isort (notless a x)) (notless a (isort x)))
 
+QED
+
+Induction Case 1:
+(IMPLIES
+  (AND (NOT (ATOM X)) (RATIONALP (CAR X))
+       (IMPLIES (AND (RATIONAL-LISTP (CDR X)) (RATIONALP A))
+                (EQUAL (ISORT (NOTLESS A (CDR X)))
+                       (NOTLESS A (ISORT (CDR X))))))
+  (IMPLIES (AND (RATIONAL-LISTP X) (RATIONALP A))
+           (EQUAL (ISORT (NOTLESS A X)) (NOTLESS A (ISORT X)))))
+
+Exportation:
+(=> (^ (lorp x) (! (endp x)) (rationalp a)
+	(=> (lorp (cdr x))
+		(== (isort (notless a (cdr x)))
+			(notless a (isort (cdr x))))))
+	(== (isort (notless a x))
+		(notless a x)))
+
+Context:
+C1. (lorp x)
+C2. (! (endp x))
+C3. (rationalp a)
+C4. (=> (lorp (cdr x))
+		(== (isort (notless a (cdr x)))
+			(notless a (isort (cdr x)))))
+
+Derived Context:
+D1. (== (isort (notless a (cdr x)))
+			(notless a (isort (cdr x)))) {C4, MP}
+
+Goal: 
+(== (isort (notless a x))
+		(notless a (isort cdr x)))
+		
+Proof:
+(== (isort (notless a x))
+		(notless a (isort cdr x)))
+
+QED
 QED
 
 lemma L3:
-(=> (lor x)
-  (=> (orderedp (rest x))
-    (== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
-  )
-)
-Conjecture 0:
-(=> (lor x)
-  (=> (orderedp (rest x))
-    (== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
-  )
-)
+(=> (^ (lorp x) (rationalp a))
+  (=> (orderedp x)
+    (== (ap (less a x) (cons a (notless a x)))
+    	(insert a x)
+    )))
+
+proof by: induction on (lorp x)
+
+Base Case 0:
+(IMPLIES (AND (NOT (ATOM X)) (NOT (RATIONALP (CAR X))))
+          (IMPLIES (AND (RATIONAL-LISTP X) (RATIONALP A))
+                   (IMPLIES (ORDEREDP X)
+                            (EQUAL (AP (LESS A X) (CONS A (NOTLESS A x)))
+                                   (INSERT A x)))))
 
 Exportation:
-(=> (^ (lor x)
-     (orderedp (rest x)))
-  (== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
+(=> (^ (! (lorp x))
+	   (lorp x)
+	   (rationalp a)
+       (orderedp x))
+  (== (ap (less a x) (cons a (notless a x))) (insert a x))
 )
 
 Context:
-C1. (lor x)
-C2. (orderedp (rest x))
+C1. (lorp x)
+C2. (! (lorp x))
+C3. (rationalp a)
+C4. (orderedp x)
+
+Derived Context:
+D1. nil {C1, C2}
+
+QED
+Base Case 1:
+ (IMPLIES (ATOM X)
+          (IMPLIES (AND (RATIONAL-LISTP X) (RATIONALP A))
+                   (IMPLIES (ORDEREDP X)
+                            (EQUAL (AP (LESS A X) (CONS A (NOTLESS A x)))
+                                   (INSERT A x)))))
+
+Exportation:
+(=> (^ (lorp x) (endp x) (rationalp a) (orderedp x))
+    (== (ap (less a x) (cons a (notless a x))) (insert a x))
+)
+   
+Context:
+C1. (lorp x)
+C2. (endp x)
+C3. (rationalp a)
+C4. (orderedp x)
 
 Derived Context:
 
+Goal:                        
+(== (ap (less a x) (cons a (notless a x))) (insert a x))
+    
+proof:                         
+(== (ap (less a x) (cons a (notless a x))) (insert a x))
 
-Goal:
-(== (ap (less (head x) (rest x)) (cons (head x) (notless (head x) (rest x)))) (insert (head x) (rest x)))
+QED
+Induction Case 1:
+(IMPLIES
+  (AND (NOT (ATOM X)) (RATIONALP (CAR X))
+       (IMPLIES (AND (RATIONAL-LISTP (CDR X)) (RATIONALP A))
+                (IMPLIES (ORDEREDP (CDR X))
+                         (EQUAL
+                          (AP (LESS A (CDR X)) (CONS A (NOTLESS A (CDR X))))
+                          (INSERT A (CDR X))))))
+  (IMPLIES (AND (RATIONAL-LISTP X) (RATIONALP A))
+           (IMPLIES (ORDEREDP X)
+                    (EQUAL (AP (LESS A X) (CONS A (NOTLESS A X)))
+                           (INSERT A X)))))
+                           
+Exportation:
+(=> (^ (lorp x) (rationalp a) (! (endp x)) (orderedp x)
+	(=> (orderedp (cdr x))
+		(== (ap (less a (cdr x)) (cons a (notless a (cdr x))))
+			(insert a (cdr x)))))
+	(== (ap (less a x) (cons a (notless a x)))
+		(insert a x)))
 
-proof:
+Context: 
+C1. (lorp x)
+C2. (rationalp a)
+C3. (! (endp x))
+C4. (orderedp x)
+C5. (=> (orderedp (cdr x))
+		(== (ap (less a (cdr x)) (cons a (notless a (cdr x))))
+			(insert a (cdr x))))
 
+Derived Context:
+D1. (== (ap (less a (cdr x)) (cons a (notless a (cdr x))))
+			(insert a (cdr x))) { C5, MP }
+
+Goal: 
+(== (ap (less a x) (cons a (notless a x)))
+		(insert a x))
+
+QED
 QED
 
 lemma q=isort:
-(=> (lor x)
+(=> (lorp x)
   (== (qsort x) (isort x)))
 
-proof by: induction on (qsort x)
+proof by: induction on (lorp x)
 
 Base Case 0:
-(=> (! (lor x))
-  (=> (lor x)
+(=> (! (lorp x))
+  (=> (lorp x)
     (== (qsort x) (isort x))
   )
 )
 
 Exportation:
-(=> (^ (! (lor x))
-  (lor x))
+(=> (^ (! (lorp x))
+  (lorp x))
   (== qsort x) (isort x))
 
 Context:
-C1. (! (lor x))
-C2. (lor x)
+C1. (! (lorp x))
+C2. (lorp x)
 
 Derived Context:
 D1. nil {C1, C2}
 
 QED
 
-Base Case 1:
-
-
+QED
 
 #|
 
@@ -397,4 +590,4 @@ Base Case 1:
    (== (msort l)
        (qsort l)))
 
-|#|#
+|#
