@@ -680,6 +680,80 @@ QED
 
 Induction Case 1:
 (IMPLIES
+  (AND (AND (RATIONALP A) (RATIONAL-LISTP L)) (NOT (ENDP L)) (< (CAR L) A)
+       (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP (CDR L)))
+                (IMPLIES (ORDEREDP (CDR L))
+                         (EQUAL
+                          (AP (LESS A (CDR L)) (CONS A (NOTLESS A (CDR L))))
+                          (INSERT A (CDR L))))))
+  (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
+           (IMPLIES (ORDEREDP L)
+                    (EQUAL (AP (LESS A L) (CONS A (NOTLESS A L)))
+                           (INSERT A L)))))
+
+Exportation:
+(=>    (^    (rationalp a)
+        (rational-listp l)
+          (! (endp l))
+        (< (car l) a)
+           (=> (^    (rationalp a)
+                (rational-listp (cdr l))
+                (orderedp (cdr l)))
+            (==    (ap (less a (cdr l)) (cons a (notless a (cdr l))))
+                (insert a (cdr l))))
+        (orderedp l))
+    (== (ap (less a l) (cons a (notless a l)))
+        (insert a l)))
+
+Context:
+C1. (rationalp a)
+C2. (rational-listp l)
+C3. (! (endp l))
+C4. (< (car l) a)
+C5. (=> (^	(rationalp a)
+            (rational-listp (cdr l))
+            (orderedp (cdr l)))
+        (==	(ap (less a (cdr l)) (cons a (notless a (cdr l))))
+            (insert a (cdr l))))
+C6. (orderedp l)
+
+Derived context:
+D1. (rational-listp (cdr l)) { C2, def rational-listp }
+D2. (orderedp (cdr l)) { C6, def orderedp }
+D3. (==	(ap (less a (cdr l)) (cons a (notless a (cdr l))))
+            (insert a (cdr l))) { mp, C1, C5, D1, D2 }
+
+Goal: (== (ap (less a l) (cons a (notless a l)))
+          (insert a l))
+
+Proof:
+(== (ap (less a l) (cons a (notless a l)))
+          (insert a l))
+== { def insert, C3, C4 }
+(== (ap (less a l) (cons a (notless a l)))
+          (cons (car l) (insert a (cdr l))))
+== { D3 }
+(== (ap (less a l) (cons a (notless a l)))
+          (cons (car l) (ap (less a (cdr l)) (cons a (notless a (cdr l))))))
+== { def less, C3, C4 }
+(== (ap (cons (car l) (less a (cdr l))) (cons a (notless a l)))
+          (cons (car l) (ap (less a (cdr l)) (cons a (notless a (cdr l))))))
+== { def notless, C3, C4 }
+(== (ap (cons (car l) (less a (cdr l))) (cons a (notless a (cdr l))))
+          (cons (car l) (ap (less a (cdr l)) (cons a (notless a (cdr l))))))
+== { def ap, C3 }
+(== (cons (car (cons (car l) (less a (cdr l)))) (ap (cdr (cons (car l) (less a (cdr l)))) (cons a (notless a (cdr l)))))
+          (cons (car l) (ap (less a (cdr l)) (cons a (notless a (cdr l))))))
+== { cons axioms }
+(== (cons (car l) (ap (less a (cdr l)) (cons a (notless a (cdr l)))))
+          (cons (car l) (ap (less a (cdr l)) (cons a (notless a (cdr l))))))
+== { obvious }
+t
+
+QED
+
+Induction Case 2:
+(IMPLIES
   (AND (AND (RATIONALP A) (RATIONAL-LISTP L)) (NOT (ENDP L)) (<= A (CAR L)))
   (IMPLIES (AND (RATIONALP A) (RATIONAL-LISTP L))
            (IMPLIES (ORDEREDP L)
