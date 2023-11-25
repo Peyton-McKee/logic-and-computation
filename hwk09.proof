@@ -588,11 +588,16 @@ t
 QED
 QED
 
-
 (set-induction-depth-limit 1)
 (property l3-helper-1 (a :rational l :lor)
-  :hyps (^ (<= a (car l)) (orderedp l))
+  :hyps (^ (! (endp l)) (<= a (car l)) (orderedp l))
   (== (less a l) nil)
+  :hints (("goal" :induct (less a l))))
+  
+(set-induction-depth-limit 1)
+(property l3-helper-2 (a :rational l :lor)
+  :hyps (^ (! (endp l)) (<= a (car l)) (orderedp l))
+  (== (notless a l) l)
   :hints (("goal" :induct (less a l))))
 
 Lemma L3:
@@ -785,9 +790,17 @@ Proof:
 == { Def insert, C3, C4 }
 (== (ap (less a l) (cons a (notless a l)))
     (cons a l))
-== { lemma l3-helper-1 ((a a) (l l)), def ap, C3 }
-(== (cons a (cons (car l) (notless a l)))
+== { lemma l3-helper-1, C3, C4, C5 }
+(== (ap nil (cons a (notless a l)))
     (cons a l))
+== { def ap }
+(== (cons a (notless a l))
+    (cons a l))
+== { lemma l3-helper-2, C3, C4, C5 }
+(== (cons a l)
+    (cons a l))
+== { obvious }
+t
 
 QED
 
