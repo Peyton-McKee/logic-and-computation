@@ -691,6 +691,26 @@ Goal:
 QED
 QED
 
+Lemma L4:
+(=>
+  (lorp l)
+  (orderedp (isort l))
+)
+
+Context:
+C1. (lorp l)
+
+Goal:
+(orderedp (isort l))
+
+Proof:
+(orderedp (isort l))
+== {lemma isort-ordered ((x l))}
+t
+
+QED
+
+
 lemma q=isort:
 (=> (lorp x)
   (== (qsort x) (isort x)))
