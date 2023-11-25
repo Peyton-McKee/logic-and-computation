@@ -423,6 +423,7 @@ QED
   :hints (("goal" :induct (notless a l))))
   
 (in-theory (disable l2-helper-1))
+(set-induction-depth-limit 1)
 (property l2-helper-2 (a b :rational l :lor)
   :hyps (<= a b)
   (== (insert b (notless a l)) (notless a (insert b l)))
