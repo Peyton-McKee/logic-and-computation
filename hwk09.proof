@@ -126,10 +126,6 @@
 (property ap-nil (x :tl)
   (== (ap x nil) x))
   
-(property l1-help (a :rational l :lor) 
-	(=> (^ (! (endp l)) (<= a (car l)))
-		(== (less a (isort (cdr l)))
-			(less a (isort l)))))
 
 
 ; Lookup sig in RAP
@@ -144,6 +140,33 @@
         (cons (car x)
               (qsort (notless (car x) (cdr x)))))))
 
+(property l1-help2 (b a :rational l :lor)
+  :hyps (and (! (endp l)) (< b a) (orderedp l))
+  (== (insert b (less a l)) (less a (insert b l)))
+  :hints (("goal" :induct (insert b l))))
+  
+(set-induction-depth-limit 1)
+(property l1-help (a b :rational l :lor) 
+	:hyps (<= a b)
+	(== (less a l) (less a (insert b l)))
+	:hints (("goal" :induct (less a l))))
+
+(in-theory (disable l1-help))
+(set-induction-depth-limit 1)
+
+	
+(set-induction-depth-limit 1)
+(property l2-helper-1 (a b :rational l :lor)
+  :hyps (< b a)
+  (== (notless a l) (notless a (insert b l)))
+  :hints (("goal" :induct (notless a l))))
+  
+(in-theory (disable l2-helper-1))
+(set-induction-depth-limit 1)
+(property l2-helper-2 (a b :rational l :lor)
+  :hyps (<= a b)
+  (== (insert b (notless a l)) (notless a (insert b l)))
+  :hints (("goal" :induct (insert b l))))
 #|
 
  You meet with her and propose proving the following theorems.
@@ -361,13 +384,15 @@ Goal:
 (== (isort (less a l)) (less a (isort l)))
 
 Proof: 
-(isort (less a l))
+(== (isort (less a l)) (less a (isort l)))
 == {def less, C3, C4}
-(isort (less a (cdr l)))
-== { D1 }
-(less a (isort (cdr l)))
-== { C1, C2, C3, C4, lemma l1-help }
-(less a (isort l))
+(== (isort (less a (cdr l))) (less a (isort l)))
+== {D1}
+(== (less a (isort (cdr l))) (less a (isort l)))
+== {def isort, C3}
+(== (less a (isort (cdr l))) (less a (insert (car l) (isort (cdr l)))))
+== {lemma l1-help ((b (car l)) (l (isort (cdr l)))), C4}
+t
 
 QED
 
@@ -402,32 +427,24 @@ C5. (=> (^ (lorp (cdr l)) (rationalp a))
 Derived Context:
 D1. (== (isort (less a (cdr l)))
                                 (less a (isort (cdr l)))) { C5, MP }
+D2. (orderedp (isort (cdr l))) { lemma isort-ordered }
 
 Goal:
 (== (isort (less a l)) (less a (isort l)))
 
 Proof:
+(isort (less a l))
+== {def less, C4}
+(isort (cons (car l) (less a (cdr l))))
+== { def isort, C3, cons axioms }
+(insert (car l) (isort (less a (cdr l))))
+== { D1 }
+(insert (car l) (less a (isort (cdr l))))
+== { D2, C1, C2, C3, C4, lemma l1-help2 ((a a) (b (car l)) (l (isort (cdr l)))) }
 (less a (isort l))
-== { def isort, C3 }
-(less a (insert (car l) (isort (cdr l))))
 
 QED
-
-
 QED
-
-(set-induction-depth-limit 1)
-(property l2-helper-1 (a b :rational l :lor)
-  :hyps (< b a)
-  (== (notless a l) (notless a (insert b l)))
-  :hints (("goal" :induct (notless a l))))
-  
-(in-theory (disable l2-helper-1))
-(set-induction-depth-limit 1)
-(property l2-helper-2 (a b :rational l :lor)
-  :hyps (<= a b)
-  (== (insert b (notless a l)) (notless a (insert b l)))
-  :hints (("goal" :induct (insert b l))))
 
 Lemma L2:
 (=>
@@ -587,6 +604,7 @@ t
 
 QED
 QED
+
 
 (set-induction-depth-limit 1)
 (property l3-helper-1 (a :rational l :lor)
