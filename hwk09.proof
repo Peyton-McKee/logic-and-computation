@@ -147,14 +147,14 @@
   
 (set-induction-depth-limit 1)
 (property l1-help (a b :rational l :lor) 
-	:hyps (<= a b)
-	(== (less a l) (less a (insert b l)))
-	:hints (("goal" :induct (less a l))))
+  :hyps (<= a b)
+  (== (less a l) (less a (insert b l)))
+  :hints (("goal" :induct (less a l))))
 
 (in-theory (disable l1-help))
 (set-induction-depth-limit 1)
 
-	
+  
 (set-induction-depth-limit 1)
 (property l2-helper-1 (a b :rational l :lor)
   :hyps (< b a)
@@ -331,8 +331,8 @@ Base Case 1:
 
 Exportation:
 (=> (^ (lorp l) (endp l) (rationalp a))
-	  (== (isort (less a l)) (less a (isort l))))
-	
+    (== (isort (less a l)) (less a (isort l))))
+  
 Context:
 C1. (lorp l)
 C2. (endp l)
@@ -365,9 +365,9 @@ Induction Case 1:
 
 Exportation: 
 (=> (^ (rationalp a) (lorp l) (! (endp l)) (<= a (car l))
-	(=> (^ (lorp (cdr l)) (rationalp a))
-		(== (isort (less a (cdr l))) (less a (isort (cdr l))))))
-	(== (isort (less a l)) (less a (isort l))))
+  (=> (^ (lorp (cdr l)) (rationalp a))
+    (== (isort (less a (cdr l))) (less a (isort (cdr l))))))
+  (== (isort (less a l)) (less a (isort l))))
 
 Context:
 C1. (rationalp a)
@@ -375,7 +375,7 @@ C2. (lorp l)
 C3. (! (endp l))
 C4. (<= a (car l))
 C5. (=> (^ (lorp (cdr l)) (rationalp a))
-		(== (isort (less a (cdr l))) (less a (isort (cdr l)))))
+    (== (isort (less a (cdr l))) (less a (isort (cdr l)))))
 
 Derived Context:
 D1.(== (isort (less a (cdr l))) (less a (isort (cdr l)))) { C5, MP }
@@ -409,11 +409,11 @@ Induction Case 2:
                    
 Exportation:
 (=> (^ (rationalp a) (lorp l) (! (endp l)) (< (car l) a)
-	(=> (^ (lorp (cdr l)) (rationalp a))
-		(== (isort (less a (cdr l)))
+  (=> (^ (lorp (cdr l)) (rationalp a))
+    (== (isort (less a (cdr l)))
                                 (less a (isort (cdr l)))))
-	)
-	(== (isort (less a l)) (less a (isort l))))
+  )
+  (== (isort (less a l)) (less a (isort l))))
 
 Context:
 C1. (rationalp a)
@@ -421,7 +421,7 @@ C2. (lorp l)
 C3. (! (endp l))
 C4. (< (car l) a)
 C5. (=> (^ (lorp (cdr l)) (rationalp a))
-		(== (isort (less a (cdr l)))
+    (== (isort (less a (cdr l)))
                                 (less a (isort (cdr l)))))
 
 Derived Context:
@@ -445,6 +445,19 @@ Proof:
 
 QED
 QED
+
+(set-induction-depth-limit 1)
+(property l2-helper-1 (a b :rational l :lor)
+  :hyps (< b a)
+  (== (notless a l) (notless a (insert b l)))
+  :hints (("goal" :induct (notless a l))))
+  
+(in-theory (disable l2-helper-1))
+(set-induction-depth-limit 1)
+(property l2-helper-2 (a b :rational l :lor)
+  :hyps (<= a b)
+  (== (insert b (notless a l)) (notless a (insert b l)))
+  :hints (("goal" :induct (insert b l))))
 
 Lemma L2:
 (=>
@@ -605,7 +618,6 @@ t
 QED
 QED
 
-
 (set-induction-depth-limit 1)
 (property l3-helper-1 (a :rational l :lor)
   :hyps (^ (! (endp l)) (<= a (car l)) (orderedp l))
@@ -621,7 +633,7 @@ QED
 Lemma L3:
 (=> (^ (rationalp a) (rational-listp l))
     (=> (orderedp l)
-        (==	(ap (less a l) (cons a (notless a l)))
+        (== (ap (less a l) (cons a (notless a l)))
             (insert a l))))
     
 Proof by: Induction on (insert a l)
@@ -634,15 +646,15 @@ Base Case 1:
                                   (INSERT A L)))))
 
 Exportation:
-(=> (^	(!	(^ (rationalp a) (rational-listp l)))
-		(rationalp a)
+(=> (^  (!  (^ (rationalp a) (rational-listp l)))
+    (rationalp a)
         (rational-listp l)
         (orderedp l))
     (== (ap (less a l) (cons a (notless a l)))
-    	(insert a l)))
+      (insert a l)))
 
 Context:
-C1. (!	(^ (rationalp a) (rational-listp l)))
+C1. (!  (^ (rationalp a) (rational-listp l)))
 C2. (rationalp a)
 C3. (rational-listp l)
 C4. (orderedp l)
@@ -661,11 +673,11 @@ Base Case 2:
                                   (INSERT A L)))))
 
 Exportation:
-(=> (^	(rationalp a)
-		(rational-listp l)
+(=> (^  (rationalp a)
+    (rational-listp l)
         (endp l)
         (orderedp l))
-    (==	(ap (less a l) (cons a (notless a l)))
+    (== (ap (less a l) (cons a (notless a l)))
         (insert a l)))
         
 Context:
@@ -675,23 +687,23 @@ C3. (endp l)
 C4. (orderedp l)
 
 Goal: (== (ap (less a l) (cons a (notless a l)))
-		  (insert a l))
+      (insert a l))
 
 Proof:
 (== (ap (less a l) (cons a (notless a l)))
-		  (insert a l))
+      (insert a l))
 == { def insert, C3 }
 (== (ap (less a l) (cons a (notless a l)))
-		  (list a))
+      (list a))
 == { def less, C3 }
 (== (ap l (cons a (notless a l)))
-		  (list a))
+      (list a))
 == { def notless, C3 }        
 (== (ap l (cons a l))
-		  (list a))
+      (list a))
 == { C3 }
 (== (ap l (cons a nil))
-		  (list a))
+      (list a))
 == { cons axioms }
 (== (ap l (list a)) (list a))
 == { def ap, C3 }
@@ -733,17 +745,17 @@ C1. (rationalp a)
 C2. (rational-listp l)
 C3. (! (endp l))
 C4. (< (car l) a)
-C5. (=> (^	(rationalp a)
+C5. (=> (^  (rationalp a)
             (rational-listp (cdr l))
             (orderedp (cdr l)))
-        (==	(ap (less a (cdr l)) (cons a (notless a (cdr l))))
+        (== (ap (less a (cdr l)) (cons a (notless a (cdr l))))
             (insert a (cdr l))))
 C6. (orderedp l)
 
 Derived context:
 D1. (rational-listp (cdr l)) { C2, def rational-listp }
 D2. (orderedp (cdr l)) { C6, def orderedp }
-D3. (==	(ap (less a (cdr l)) (cons a (notless a (cdr l))))
+D3. (== (ap (less a (cdr l)) (cons a (notless a (cdr l))))
             (insert a (cdr l))) { mp, C1, C5, D1, D2 }
 
 Goal: (== (ap (less a l) (cons a (notless a l)))
@@ -784,12 +796,12 @@ Induction Case 2:
                            (INSERT A L)))))
                            
 Exportation:
-(=>	(^	(rationalp a)
-		(rational-listp l)
-		(! (endp l))
+(=> (^  (rationalp a)
+    (rational-listp l)
+    (! (endp l))
         (<= a (car l))
         (orderedp l))
-    (==	(ap (less a l) (cons a (notless a l)))
+    (== (ap (less a l) (cons a (notless a l)))
         (insert a l)))
 
 Context:
@@ -843,24 +855,27 @@ t
 
 QED
 
+(property l1-temp (a :rational l :lor)
+  :proofs? nil
+    (== (isort (less a l)) (less a (isort l))))
 
 lemma q=isort:
-(=> (lorp x)
-  (== (qsort x) (isort x)))
+(=> (lorp l)
+  (== (qsort l) (isort l)))
 
-proof by: induction on (lorp x)
+proof by: induction on (qsort l)
 
 Base Case 0:
-(=> (! (lorp x))
-  (=> (lorp x)
-    (== (qsort x) (isort x))
+(=> (! (lorp l))
+  (=> (lorp l)
+    (== (qsort l) (isort l))
   )
 )
 
 Exportation:
 (=> (^ (! (lorp x))
   (lorp x))
-  (== qsort x) (isort x))
+  (== (qsort x) (isort x)))
 
 Context:
 C1. (! (lorp x))
@@ -871,6 +886,143 @@ D1. nil {C1, C2}
 
 QED
 
+Base Case 1:
+(IMPLIES (AND (RATIONAL-LISTP L) (ENDP L))
+          (IMPLIES (RATIONAL-LISTP L) (EQUAL (QSORT L) (ISORT L))))
+          
+Exportation:
+(=>
+  (^ (lorp l) (endp l))
+  (== (qsort l) (isort l))
+)
+
+Context:
+C1. (lorp l)
+C2. (endp l)
+
+Goal:
+(== (qsort l) (isort l))
+
+Proof:
+(== (qsort l) (isort l))
+== {def qsort, C2, def isort}
+(== l nil)
+== {C2}
+t
+QED
+
+Induction Case 1:
+(IMPLIES
+  (AND (RATIONAL-LISTP L) (NOT (ENDP L))
+       (IMPLIES (RATIONAL-LISTP (LESS (CAR L) (CDR L)))
+                (EQUAL (QSORT (LESS (CAR L) (CDR L)))
+                       (ISORT (LESS (CAR L) (CDR L)))))
+       (IMPLIES (RATIONAL-LISTP (NOTLESS (CAR L) (CDR L)))
+                (EQUAL (QSORT (NOTLESS (CAR L) (CDR L)))
+                       (ISORT (NOTLESS (CAR L) (CDR L))))))
+  (IMPLIES (RATIONAL-LISTP L) (EQUAL (QSORT L) (ISORT L))))
+  
+  
+Exportation:
+(=>
+  (^ (lorp l) (! (endp l))
+    (=> (lorp (less (car l) (cdr l)))
+      (== (qsort (less (car l) (cdr l)))
+        (isort (less (car l) (cdr l)))
+      )
+    )
+    (=> (lorp (notless (car l) (cdr l)))
+      (== (qsort (notless (car l) (cdr l)))
+        (isort (notless (car l) (cdr l)))
+      )
+    )
+  )
+  (== (qsort l) (isort l))
+)
+
+Context:
+C1. (lorp l)
+C2. (! (endp l))
+C3. (=> (lorp (less (car l) (cdr l)))
+      (== (qsort (less (car l) (cdr l)))
+        (isort (less (car l) (cdr l)))
+      )
+    )
+C4. (=> (lorp (notless (car l) (cdr l)))
+      (== (qsort (notless (car l) (cdr l)))
+        (isort (notless (car l) (cdr l)))
+      )
+    )
+    
+Derived Context:
+D1. (lorp (less (car l) (cdr l))) {def less}
+D2. (lorp (notless (car l) (cdr l))) {def notless}
+D3. (== (qsort (less (car l) (cdr l)))
+        (isort (less (car l) (cdr l)))
+      ) {C3, D1, mp}
+D4. (== (qsort (notless (car l) (cdr l)))
+        (isort (notless (car l) (cdr l)))
+      ) {C4, D2, mp}
+      
+Goal: (== (qsort l) (isort l))
+
+Proof:
+(qsort l)
+== {def qsort, C2}
+(ap (qsort (less (car l) (cdr l)))
+        (cons (car l)
+              (qsort (notless (car l) (cdr l)))))
+== {D3, D4}
+(ap (isort (less (car l) (cdr l)))
+        (cons (car l)
+              (isort (notless (car l) (cdr l)))))
+== {lemma l1-temp ((a (car l)) (l (cdr l))), lemma L2 ((a (car l)) (l (cdr l)))}
+(ap (less (car l) (isort (cdr l)))
+        (cons (car l)
+              (notless (car l) (isort (cdr l)))))
+== {lemma L4 ((l (cdr l))), lemma L3 ((a (car l)) (l (isort (cdr l))))}
+(insert (car l) (isort (cdr l)))
+== {def isort, C2}
+(isort l)
+
+QED
+QED
+
+Lemma qsort-orderedp:
+(=> (lorp l)
+  (orderedp (qsort l))
+)
+
+Context:
+C1. (lorp l)
+
+Goal: (orderedp (qsort l))
+
+Proof:
+(orderedp (qsort l))
+== {C1, lemma q=isort}
+(orderedp (isort l))
+== {lemma L4}
+t
+QED
+
+Lemma qsort-permp:
+(=> (lorp l)
+  (permp (qsort l) l)
+)
+
+Context:
+C1. (lorp l)
+
+Goal:
+(permp (qsort l) l)
+
+Proof:
+(permp (qsort l) l)
+== {C1, lemma q=isort}
+(permp (isort l) l)
+== {lemma isort-permp ((x l))}
+t
 QED
 
 #|
