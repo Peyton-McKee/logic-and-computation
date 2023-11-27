@@ -141,8 +141,8 @@
               (qsort (notless (car x) (cdr x)))))))
 
 (property l1-help2 (b a :rational l :lor)
-  :hyps (and (! (endp l)) (< b a) (orderedp l))
-  (== (insert b (less a l)) (less a (insert b l)))
+  (=> (and (< b a) (orderedp l))
+      (== (insert b (less a l)) (less a (insert b l))))
   :hints (("goal" :induct (insert b l))))
   
 (set-induction-depth-limit 1)
@@ -441,6 +441,8 @@ Proof:
 == { D1 }
 (insert (car l) (less a (isort (cdr l))))
 == { D2, C1, C2, C3, C4, lemma l1-help2 ((a a) (b (car l)) (l (isort (cdr l)))) }
+(less a (insert (car l) (isort (cdr l))))
+== {def isort}
 (less a (isort l))
 
 QED
