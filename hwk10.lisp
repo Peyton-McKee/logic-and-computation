@@ -63,15 +63,11 @@ CS 2800 Homework 10 - Fall 2023
  Q6. binary product
 
 Inductive Invariants:
-cnt <= b
+dig % a = 0
+dig >= a 
 res >= 0
 cnt >= 0
-dig >= a
-dig % a = 0
-
-Portential Invariants:
-res <= a * b	
-dig <= a + (a * b)
+a*b = dig*cnt + res
 
  You do not have to play the game. Instead you can solve the following
  exercises from the lecture notes, which correspond to the levels
